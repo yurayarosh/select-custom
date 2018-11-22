@@ -55,4 +55,27 @@ selects.forEach(function(el) {
 
 Поддерживает стандартные аттрибуты `multiple`, `disabled`.
 
-`select._onOptionClick(customOption)` - функция по клику на опцию (можно использовать если нет события `change` селекта).
+### События
+
+На нативный селект
+```js
+let select = new Select(el, {options});
+select.init();
+
+el.addEventListener('change', (e) => {
+  // some function
+});
+
+```
+
+По клику на опцию (можно использовать если нет события `change` селекта).
+```js
+let select = new Select(el, {options});
+
+select._onOptionClick = (customOption) => {
+  // some function
+};
+
+select.init();
+
+```
