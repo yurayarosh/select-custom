@@ -2,7 +2,6 @@ import './polyfill';
 import * as helpFunctions from './helpFunctions';
 
 class Select {
-
   constructor(el, options) {
     this.el = el;
     this.defaultParams = {
@@ -65,12 +64,19 @@ class Select {
   };
 
   addOptionItem(container) {
-    if (this.constants.optionItem) {
-      const item = this.constants.optionItem.cloneNode(true);
-      container.appendChild(item);
+    if (this.options.optionItem.item) {
+      const item = this.options.optionItem.item.cloneNode(true);
+      if (this.options.optionItem.position === 'start') {
+        const inner = container.innerHTML;
+        container.innerHTML = '';
+        container.appendChild(item);
+        container.innerHTML += inner;
+      };
+      if (this.options.optionItem.position === 'end') {
+        container.appendChild(item);
+      }
     };
-  };
-  
+  };  
 
   closeSelect(e) {
     const allOpenSelects = document.querySelectorAll('.'+this.constants.wrap+'.'+this.constants.IS_OPEN);
@@ -143,7 +149,6 @@ class Select {
           item
         });
       };
-
     } else {
       this.setSelectedOptionsDefault({
         clickedCustomOption,
@@ -166,7 +171,7 @@ class Select {
 
   getSelectOptionsText(select) {    
     const options = select && select.options;
-    let result = [];
+    const result = [];
     let opt;
 
     for (let i = 0; i < options.length; i++) {
@@ -250,7 +255,7 @@ class Select {
     wrap.appendChild(panel);
   };  
 
-  _open() {    
+  _open() {
     this.opener().addEventListener('click', (e) => {
       if (this.el.disabled) return;
       
@@ -260,10 +265,9 @@ class Select {
       for (let i = 0; i < allOpenSelects.length; i++) {
         allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
       };
+
       this.setPanelPosition();
-
-    });    
-
+    });
   };
 
   _close() {    
@@ -279,13 +283,15 @@ class Select {
     const customOptions = this.select().querySelectorAll('.'+this.constants.option);
     for (let i = 0; i < customOptions.length; i++) {
       customOptions[i].addEventListener('click', (e) => {
+        const clickedCustomOption = e.currentTarget;
+
         if (this.options.changeOpenerText) {
-          this.opener().innerHTML = e.currentTarget.innerHTML;
+          this.opener().innerHTML = clickedCustomOption.innerText;
         };       
 
         this.setSelectedOptions({
           e,
-          clickedCustomOption: e.currentTarget,
+          clickedCustomOption,
           nativeOptionsList: options,
           customOptionsList: customOptions,
           item: i
@@ -298,13 +304,14 @@ class Select {
         if (this.options.changeOpenerText) {
           if (this.el.multiple && this.options.multipleSelectOpenerText === 'array') {
             this.opener().innerHTML = this.getSelectOptionsText(this.el);
-          } else if (this.el.multiple && !this.options.multipleSelectOpenerText) {
-            this.opener().innerHTML = this.opener().innerHTML;
           } else {
-            this.opener().innerHTML = e.currentTarget.innerHTML;
+            this.opener().innerHTML = clickedCustomOption.innerText;
           };          
-        };        
+        };
 
+        if (this._onOptionClick) {
+          this._onOptionClick(e.currentTarget);
+        };
       });
     };
   };
@@ -318,7 +325,6 @@ class Select {
       helpFunctions.unwrap(this.select());
     };
   };
-
 };
 
 module.exports = Select;
