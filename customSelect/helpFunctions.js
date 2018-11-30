@@ -20,3 +20,7 @@ export function unwrap(wrapper) {
 
   wrapper.parentNode.replaceChild(docFrag, wrapper);
 };
+
+export function detectTouch() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints;
+};

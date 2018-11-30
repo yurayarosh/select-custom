@@ -30,16 +30,18 @@ selects.forEach(function(el) {
 Стандартные опции
 ```js
 {
-  optionItem: false,
+  optionBuilder: false,
   panelItem: false,
   changeOpenerText: true,
   multipleSelectionOnSingleClick: false,
   multipleSelectOpenerText: false,
-  allowPanelClick: false
+  allowPanelClick: false,
+  openOnHover: false,
+  closeOnMouseleave: false
 }
 ```
 
-`optionItem` - варианты: `{item: element, position: 'start'}`, `{item: element, position: 'end'}`- добавляет елемент в кастомный елемент опции в начало или в конец соответственно.
+`optionBuilder` - функция с аргументами `option, customOption` для добавления елементов в кастомную опцию.
 
 `panelItem` - варианты: `{item: element, position: 'top'}`, `{item: element, position: 'bottom'}`- добавляет елемент в кастомную панель поверх остальных или вниз соответственно.
 
@@ -53,7 +55,11 @@ selects.forEach(function(el) {
 
 `allowPanelClick` - если установлено `true` - при клике на панель с опциями она будет оставаться открытой.
 
-Поддерживает стандартные аттрибуты `multiple`, `disabled`.
+`openOnHover` - если установлено `true` - открытие происходит по наведнию.
+
+`closeOnMouseleave` - если установлено `true` - закрытие происходит по наведнию.
+
+Поддерживает стандартные аттрибуты `multiple`, `disabled`, `disabled` для `option`.
 
 ### События
 
@@ -68,14 +74,79 @@ el.addEventListener('change', (e) => {
 
 ```
 
-По клику на опцию (можно использовать если нет события `change` селекта).
+На открытие и закрытие соответственно
 ```js
 let select = new Select(el, {options});
 
-select._onOptionClick = (customOption) => {
+select.onOpen = (select) => {
+  // some function
+};
+
+select.onClose = (select) => {
   // some function
 };
 
 select.init();
 
+```
+
+### Пример использования
+
+```js
+const selects = [...document.querySelectorAll('.js-select')];
+
+// приер создания инпута для вставки в панель
+const panelInput = document.createElement('input');
+const panelInputWrap = document.createElement('div');
+panelInput.type = 'text';
+panelInput.className = 'js-search';
+panelInputWrap.appendChild(panelInput);
+
+// пример вставки иконки в елемент опции
+function addOptionItem(option, customOption) {
+  const iconName = option.dataset.icon;
+  if (!iconName) return;
+  const inner = customOption.innerHTML;
+  customOption.innerHTML = `<svg class="icon icon-${iconName}"><use xlink:href="img/sprite.svg#icon-${iconName}"></use></svg>` + inner;
+};
+
+const params = {
+  multiple: {
+    multipleSelectOpenerText: true,
+    multipleSelectionOnSingleClick: true
+  },
+  withInput: {
+    panelItem: {
+      item: panelInputWrap,
+      position: 'top'
+    }
+  },
+  default: {
+    optionBuilder: addOptionItem
+  }
+};
+
+selects.forEach((selectEl) => {
+  let selectType = selectEl.dataset.type;
+  let select = new Select(selectEl, params[selectType]);
+  select.init();
+
+  // пример добавления плейсхолдера
+  if (selectEl.classList.contains('has-placeholder')) {
+    selectEl.parentNode.classList.add('has-placeholder');
+  };
+
+  selectEl.addEventListener('change', (e) => {
+    const currSelect = e.currentTarget;
+    const selectType = select.dataset.type;
+
+    if (currSelect.value !== 'placeholder') {
+      currSelect.classList.add('has-placeholder-hidden');
+      currSelect.parentNode.classList.add('has-placeholder-hidden');
+    } else {
+      currSelect.classList.remove('has-placeholder');
+      currSelect.parentNode.classList.remove('has-placeholder-hidden');
+    };
+  });
+});
 ```
