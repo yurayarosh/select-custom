@@ -18,10 +18,13 @@ selects.forEach(function(el) {
   select.init();
 
   //destroy
-  if (select) {
-    select.destroy();
-    select = null;
-  };
+  if (!select) return;
+  select.destroy();
+  select = null;
+
+  //refresh
+  if (!select) return;
+  select.refresh();
 });
 ```
 
@@ -127,8 +130,8 @@ const params = {
 };
 
 selects.forEach((selectEl) => {
-  let selectType = selectEl.dataset.type;
-  let select = new Select(selectEl, params[selectType]);
+  const selectType = selectEl.dataset.type;
+  const select = new Select(selectEl, params[selectType]);
   select.init();
 
   // пример добавления плейсхолдера
