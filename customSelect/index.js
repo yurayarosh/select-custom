@@ -348,7 +348,9 @@ class Select {
 
         if (this.options.changeOpenerText) {
           if (this.el.multiple && this.options.multipleSelectOpenerText) {
-            this.opener().innerHTML = this.getSelectOptionsText(this.el);
+            if (this.getSelectOptionsText(this.el)) {
+              this.opener().innerText = this.getSelectOptionsText(this.el);
+            };            
           } else if (this.el.multiple && !this.options.multipleSelectOpenerText) {
             this.opener().innerHTML = this.opener().innerHTML;
           } else {
