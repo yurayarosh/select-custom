@@ -1,5 +1,11 @@
 # customSelect
 
+### Установка
+
+```html
+npm i yurayarosh/customSelect -D
+```
+
 ```html
 <select class="js-select">
   <option value="1">Option 1</option>
