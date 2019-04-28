@@ -30,6 +30,7 @@ class Select {
       opener: 'custom-select__opener',
       panel: 'custom-select__panel',
       option: 'custom-select__option',
+      optionsWrap: 'custom-select__options',
       optgroup: 'custom-select__optgroup',
       panelItemClassName: 'custom-select__panel-item',
       IS_OPEN: 'is-open',
@@ -222,8 +223,12 @@ class Select {
     const options = this.el.options;
     const optgroups = this.el.querySelectorAll('optgroup');
     let panelItem;
+    let optionsWrap;
 
     if (this.options.panelItem.item) {
+      optionsWrap = document.createElement('div');
+      optionsWrap.className = this.constants.optionsWrap;
+
       this.el.setAttribute(this.constants.DATA_HAS_PANEL_ITEM, '');
       panelItem = this.options.panelItem.item.cloneNode(true);
       panelItem.classList.add(this.constants.panelItemClassName);
@@ -257,8 +262,17 @@ class Select {
 
         customOptgroup.classList.add(this.constants.optgroup);
         customOptgroup.setAttribute(this.constants.DATA_LABEL, title);
-        
-        panel.appendChild(customOptgroup);
+
+        if (optionsWrap) {
+          optionsWrap.appendChild(customOptgroup);
+          
+        } else {
+          panel.appendChild(customOptgroup);
+        };
+      };
+
+      if (optionsWrap) {
+        panel.appendChild(optionsWrap);
       };
     } else {
       for (let i = 0; i < options.length; i++) {
@@ -274,7 +288,16 @@ class Select {
           customOption.classList.add(this.constants.IS_DISABLED);
         };
         this.addOptionItem(options[i], customOption);
-        panel.appendChild(customOption);
+
+        if (optionsWrap) {
+          optionsWrap.appendChild(customOption);
+        } else {
+          panel.appendChild(customOption);
+        };
+      };
+
+      if (optionsWrap) {
+        panel.appendChild(optionsWrap);
       };
     };
 
