@@ -216,6 +216,18 @@ class Select {
     return result.join(', ');
   };
 
+  addDataAttributes(el, targetEl) {
+    const dataAttributes = [].filter.call(el.attributes, (at) => {
+      return /^data-/.test(at.name);
+    });
+
+    if (dataAttributes.length) {
+      dataAttributes.forEach((attribute) => {
+        targetEl.setAttribute(attribute.name, attribute.value);
+      });          
+    };
+  };
+
   _createElements() {
     const wrap = document.createElement('div');
     const panel = document.createElement('div');
@@ -249,6 +261,9 @@ class Select {
           customOption.classList.add(this.constants.option);
           customOption.setAttribute(this.constants.DATA_VALUE, optionsInGroup[j].value);
           customOption.innerHTML = optionsInGroup[j].innerHTML;
+
+          this.addDataAttributes(optionsInGroup[j], customOption);
+
           if (optionsInGroup[j].selected) {
             customOption.classList.add(this.constants.IS_SELECTED);
             opener.innerHTML = optionsInGroup[j].innerHTML;
@@ -262,6 +277,8 @@ class Select {
 
         customOptgroup.classList.add(this.constants.optgroup);
         customOptgroup.setAttribute(this.constants.DATA_LABEL, title);
+
+        this.addDataAttributes(optgroups[i], customOptgroup);
 
         if (optionsWrap) {
           optionsWrap.appendChild(customOptgroup);
@@ -280,6 +297,9 @@ class Select {
         customOption.classList.add(this.constants.option);
         customOption.innerHTML = options[i].innerHTML;
         customOption.setAttribute(this.constants.DATA_VALUE, options[i].value);
+
+        this.addDataAttributes(options[i], customOption);
+
         if (options[i].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
           opener.innerHTML = options[i].innerHTML;
