@@ -235,19 +235,29 @@ class Select {
     const options = this.el.options;
     const optgroups = this.el.querySelectorAll('optgroup');
     let panelItem;
+    let panelItemWrap;
     let optionsWrap;
 
     if (this.options.panelItem.item) {
+      panelItemWrap = document.createElement('div');
       optionsWrap = document.createElement('div');
       optionsWrap.className = this.constants.optionsWrap;
+      panelItemWrap.className = this.constants.panelItemClassName;
 
       this.el.setAttribute(this.constants.DATA_HAS_PANEL_ITEM, '');
-      panelItem = this.options.panelItem.item.cloneNode(true);
-      panelItem.classList.add(this.constants.panelItemClassName);
+      
+      if (typeof this.options.panelItem.item === 'object') {
+        panelItem = this.options.panelItem.item.cloneNode(true);
+        panelItem.className = this.options.panelItem.className ? this.options.panelItem.className : '';
+        panelItemWrap.appendChild(panelItem);
+      };
+      if (typeof this.options.panelItem.item === 'string') {
+        panelItemWrap.innerHTML = this.options.panelItem.item;
+      };      
     };
 
     if (this.options.panelItem.position === 'top') {
-      panel.appendChild(panelItem);
+      panel.appendChild(panelItemWrap);
     };
 
     if (optgroups.length > 0) {
@@ -322,7 +332,7 @@ class Select {
     };
 
     if (this.options.panelItem.position === 'bottom') {
-      panel.appendChild(panelItem);
+      panel.appendChild(panelItemWrap);
     };
 
     if (this.options.allowPanelClick) {

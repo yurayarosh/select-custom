@@ -52,7 +52,7 @@ selects.forEach(function(el) {
 
 `optionBuilder` - функция с аргументами `option, customOption` для добавления елементов в кастомную опцию.
 
-`panelItem` - варианты: `{item: element, position: 'top'}`, `{item: element, position: 'bottom'}`- добавляет елемент в кастомную панель поверх остальных или вниз соответственно.
+`panelItem` - варианты: `{ item: element or string, position: 'top', className: '' }`, `{ item: element or string, position: 'bottom', className: '' }`- добавляет елемент в кастомную панель поверх остальных или вниз соответственно.
 
 `changeOpenerText` - если установлено `false` - при выборе опции текст в верхней панели меняться не будет.
 
@@ -106,17 +106,14 @@ const selects = [...document.querySelectorAll('.js-select')];
 
 // приер создания инпута для вставки в панель
 const panelInput = document.createElement('input');
-const panelInputWrap = document.createElement('div');
 panelInput.type = 'text';
-panelInput.className = 'js-search';
-panelInputWrap.appendChild(panelInput);
 
 // пример вставки иконки в елемент опции
 function addOptionItem(option, customOption) {
-  const iconName = option.dataset.icon;
-  if (!iconName) return;
+  const color = option.dataset.color;
+  if (!color) return;
   const inner = customOption.innerHTML;
-  customOption.innerHTML = `<svg class="icon icon-${iconName}"><use xlink:href="img/sprite.svg#icon-${iconName}"></use></svg>` + inner;
+  customOption.innerHTML = `<span style="background-color: ${color};"></span>` + inner;
 };
 
 const params = {
@@ -126,7 +123,14 @@ const params = {
   },
   withInput: {
     panelItem: {
-      item: panelInputWrap,
+      item: panelInput,
+      position: 'top',
+      className: 'js-search'
+    }
+  },
+  withInputScnd: {
+    panelItem: {
+      item: '<input type="text" class="js-search"/>',
       position: 'top'
     }
   },
