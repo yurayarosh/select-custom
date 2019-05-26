@@ -14,5 +14,17 @@ export default [
       }),
       uglify()
     ]
+  },
+  {
+    input: 'src/test.js',
+    output: {
+      file: 'test.js',
+      format: 'cjs'
+    },
+    plugins: [
+      babel({
+        exclude: 'node_modules/**' // only transpile our source code
+      })
+    ]
   }
 ]

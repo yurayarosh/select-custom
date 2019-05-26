@@ -43,7 +43,7 @@ selects.forEach(function(el) {
   panelItem: false,
   changeOpenerText: true,
   multipleSelectionOnSingleClick: false,
-  multipleSelectOpenerText: false,
+  multipleSelectOpenerText: { labels: false, array: false },
   allowPanelClick: false,
   openOnHover: false,
   closeOnMouseleave: false
@@ -60,7 +60,7 @@ selects.forEach(function(el) {
 
 `multipleSelectionOnSingleClick` - если установлено `true` - позволяет множественный выбор без зажатой клавиши CTRL.
 
-`multipleSelectOpenerText` - если установлено `'array'` - в верхнюю панель при выборе опций будет добавляться масив с их текстом.
+`multipleSelectOpenerText` - если установлено `{ array: true }` - в верхнюю панель при выборе опций будет добавляться масив с их текстом, если установлено `{ labels: true }` - в верхнюю панель при выборе опций будут добавляться елементы с текстом опции и кнопкой.
 
 `allowPanelClick` - если установлено `true` - при клике на панель с опциями она будет оставаться открытой.
 

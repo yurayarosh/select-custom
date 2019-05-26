@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    padding: 20px;
+  }
+  :root {
+    --black: #000;
+    --gray: #ccc;
+    --white: #fff;
+    --fz: 16px;
+   }
+    .custom-select {
+      --padding: 10px;
+      --margin: 10px;
+      --field-height: 30px;
+      --width: 300px;
+      --border: 1px solid var(--gray);
+
+      position: relative;
+      max-width: var(--width);
+      margin-bottom: var(--margin);
+    }
+    .custom-select select {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+    }
+    .custom-select.is-open .custom-select__panel {
+      visibility: visible;
+      opacity: 1;
+    }
+    .custom-select__panel{
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: var(--white);
+      z-index: 1;
+      border: var(--border);
+    }
+    .custom-select__opener {
+      min-height: var(--field-height);
+      padding: calc(var(--padding) / 2) var(--padding);
+      border: var(--border);
+      cursor: pointer;
+    }
+    .custom-select__option {
+      padding: calc(var(--padding) / 2) var(--padding);
+      cursor: pointer;
+    }
+    .custom-select__option:hover, .custom-select__option.is-selected {
+      background-color: var(--gray);
+    }
+    .custom-select__opener-label button {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+    }
+  </style>
+</head>
+<body>
+  <select name="" id="" class="js-select" data-type="default">
+    <option value="1">bla1</option>
+    <option value="2">ba2</option>
+    <option value="3">bla3</option>
+  </select>
+
+  <select name="" id="" class="js-select" multiple="" data-type="multiple">
+    <option value="1">bla1</option>
+    <option value="2">ba2</option>
+    <option value="3">bla3</option>
+  </select>
+
+
+  <script src="test.js"></script>
+</body>
+</html>
