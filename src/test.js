@@ -10,7 +10,7 @@ selects.forEach((selectEl) => {
   const name = selectEl.getAttribute('data-type');
   const options = {
     multiple: {
-      multipleSelectOpenerText: { labels: true }
+      multipleSelectOpenerText: { array: true }
     }
   };
   const select = new Select(selectEl, options[name]);

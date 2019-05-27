@@ -219,16 +219,15 @@ export default class Select {
   };
 
   getSelectOptionsText(select) {    
-    const options = select && select.options;
+    const options = [].slice.call(select.options);
     const result = [];
-    let opt;
 
-    for (let i = 0; i < options.length; i++) {
-      opt = options[i];
-      if (opt.selected) {
-        result.push(opt.text);
+    options.forEach((option) => {
+      if (option.selected) {
+        result.push(option.innerText);
       };
-    };
+    });
+    
     return result.join(', ');
   };
 
@@ -236,20 +235,17 @@ export default class Select {
     const customOptions = [].slice.call(customOption.parentNode.children);
     const options = [].slice.call(this.select().querySelectorAll('option'));
 
-    const labels = [];
-
-    const createLabels = (option, i) => {      
+    const labels = customOptions.map((option, i) => {
       const label = document.createElement('span');
       label.className = this.constants.openerLabel;
       label.setAttribute(this.constants.DATA_LABEL_INDEX, i);
       label.innerHTML = `${option.innerText}<button></button>`;
 
-      labels.push(label);
-    };
+      return label;
+    });
 
     customOptions.forEach((option, i) => {
       option.setAttribute(this.constants.DATA_LABEL_INDEX, i);
-      createLabels(option, i);
     });
 
     options.forEach((option, i) => {

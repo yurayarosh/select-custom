@@ -368,15 +368,15 @@ var Select = function () {
   }, {
     key: 'getSelectOptionsText',
     value: function getSelectOptionsText(select) {
-      var options = select && select.options;
+      var options = [].slice.call(select.options);
       var result = [];
-      var opt = void 0;
 
-      for (var i = 0; i < options.length; i++) {
-        opt = options[i];
-        if (opt.selected) {
-          result.push(opt.text);
-        }      }      return result.join(', ');
+      options.forEach(function (option) {
+        if (option.selected) {
+          result.push(option.innerText);
+        }      });
+
+      return result.join(', ');
     }
   }, {
     key: 'setSelectOptionsItems',
@@ -386,20 +386,17 @@ var Select = function () {
       var customOptions = [].slice.call(customOption.parentNode.children);
       var options = [].slice.call(this.select().querySelectorAll('option'));
 
-      var labels = [];
-
-      var createLabels = function createLabels(option, i) {
+      var labels = customOptions.map(function (option, i) {
         var label = document.createElement('span');
         label.className = _this.constants.openerLabel;
         label.setAttribute(_this.constants.DATA_LABEL_INDEX, i);
         label.innerHTML = option.innerText + '<button></button>';
 
-        labels.push(label);
-      };
+        return label;
+      });
 
       customOptions.forEach(function (option, i) {
         option.setAttribute(_this.constants.DATA_LABEL_INDEX, i);
-        createLabels(option, i);
       });
 
       options.forEach(function (option, i) {
@@ -641,7 +638,7 @@ selects.forEach(function (selectEl) {
   var name = selectEl.getAttribute('data-type');
   var options = {
     multiple: {
-      multipleSelectOpenerText: { labels: true }
+      multipleSelectOpenerText: { array: true }
     }
   };
   var select = new Select(selectEl, options[name]);

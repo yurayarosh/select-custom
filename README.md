@@ -42,7 +42,7 @@ selects.forEach(function(el) {
   optionBuilder: false,
   panelItem: false,
   changeOpenerText: true,
-  multipleSelectionOnSingleClick: false,
+  multipleSelectionOnSingleClick: true,
   multipleSelectOpenerText: { labels: false, array: false },
   allowPanelClick: false,
   openOnHover: false,
