@@ -1,9 +1,9 @@
-# customSelect
+# select-custom
 
-### Установка
+### Install
 
 ```html
-npm i yurayarosh/customSelect -D
+npm i select-custom -D
 ```
 
 ```html
@@ -34,9 +34,9 @@ selects.forEach(function(el) {
 });
 ```
 
-### Опции
+### Options
 
-Стандартные опции
+Standart options
 ```js
 {
   optionBuilder: false,
@@ -50,31 +50,31 @@ selects.forEach(function(el) {
 }
 ```
 
-`optionBuilder` - функция с аргументами `option, customOption` для добавления елементов в кастомную опцию.
+`optionBuilder` - function with arguments `option, customOption` allows add elements to custom option.
 
-`panelItem` - варианты: `{ item: element or string, position: 'top', className: '' }`, `{ item: element or string, position: 'bottom', className: '' }`- добавляет елемент в кастомную панель поверх остальных или вниз соответственно.
+`panelItem` - options: `{ item: element or string, position: 'top', className: '' }`, `{ item: element or string, position: 'bottom', className: '' }`- add element in custom panel above or under options.
 
-`changeOpenerText` - если установлено `false` - при выборе опции текст в верхней панели меняться не будет.
+`changeOpenerText` - if `false` - text in opener panel won't change.
 
-Если нативному селекту установлен аттрибут `multiple` селект позволяет множественный выбор.
+If native select has attribute `multiple` - select allows multiple selection.
 
-`multipleSelectionOnSingleClick` - если установлено `true` - позволяет множественный выбор без зажатой клавиши CTRL.
+`multipleSelectionOnSingleClick` - if `true` - allows multiple selection witout CTRL button.
 
-`multipleSelectOpenerText` - если установлено `{ array: true }` - в верхнюю панель при выборе опций будет добавляться масив с их текстом, если установлено `{ labels: true }` - в верхнюю панель при выборе опций будут добавляться елементы с текстом опции и кнопкой.
+`multipleSelectOpenerText` - if `{ array: true }` - in opener pannel will be added array with selected options text, if `{ labels: true }` - in opener pannel will be added span elements with button and option text.
 
-`allowPanelClick` - если установлено `true` - при клике на панель с опциями она будет оставаться открытой.
+`allowPanelClick` - if `true` - option panel won't close on selection.
 
-`openOnHover` - если установлено `true` - открытие происходит по наведнию.
+`openOnHover` - if `true` - allows open on hover.
 
-`closeOnMouseleave` - если установлено `true` - закрытие происходит по наведнию.
+`closeOnMouseleave` - if `true` - allows close on mouseleave.
 
-Поддерживает стандартные аттрибуты `multiple`, `disabled`, `disabled` для `option`.
+Supports standart attributs `multiple`, `disabled`, `disabled` for `option`.
 
-### События
+### Events
 
-На нативный селект
+Native select
 ```js
-const select = new Select(el, {options});
+const select = new Select(el, { options });
 select.init();
 
 el.addEventListener('change', (e) => {
@@ -83,9 +83,9 @@ el.addEventListener('change', (e) => {
 
 ```
 
-На открытие и закрытие соответственно
+On open and on close custom select
 ```js
-const select = new Select(el, {options});
+const select = new Select(el, { options });
 
 select.onOpen = (select) => {
   // some function
@@ -99,16 +99,16 @@ select.init();
 
 ```
 
-### Пример использования
+### Example
 
 ```js
-const selects = [...document.querySelectorAll('.js-select')];
+const selects = [].slice.call(document.querySelectorAll('.js-select'));
 
-// приер создания инпута для вставки в панель
+// create input to add in panel
 const panelInput = document.createElement('input');
 panelInput.type = 'text';
 
-// пример вставки иконки в елемент опции
+// adding colored square in option
 function addOptionItem(option, customOption) {
   const color = option.dataset.color;
   if (!color) return;
@@ -144,7 +144,7 @@ selects.forEach((selectEl) => {
   const select = new Select(selectEl, params[selectType]);
   select.init();
 
-  // пример добавления плейсхолдера
+  // adding placeholder
   if (selectEl.classList.contains('has-placeholder')) {
     selectEl.parentNode.classList.add('has-placeholder');
   };
