@@ -15,7 +15,7 @@ npm i select-custom -D
 ```
 
 ```js
-import Select from 'customSelect';
+import Select from 'select-custom';
 
 const selects = [].slice.call(document.querySelectorAll('.js-select'));
 
