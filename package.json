@@ -1,7 +1,7 @@
 {
   "name": "select-custom",
   "description": "JS plugin for making custom wrap around HTML select element",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "main": "index.js",
   "repository": {
     "type": "git",

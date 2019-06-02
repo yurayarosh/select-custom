@@ -6,13 +6,14 @@ export default class Select {
     this.el = el;
     this.defaultParams = {
       optionBuilder: false,
-      panelItem: false,
+      panelItem: { position: '', item: '', className: '' },
       changeOpenerText: true,
       multipleSelectionOnSingleClick: true,
       multipleSelectOpenerText: { labels: false, array: false },
       allowPanelClick: false,
       openOnHover: false,
-      closeOnMouseleave: false
+      closeOnMouseleave: false,
+      wrapDataAttributes: false
     };
     options = Object.assign({}, this.defaultParams, options);
     this.options = {
@@ -23,7 +24,8 @@ export default class Select {
       multipleSelectOpenerText: options.multipleSelectOpenerText,
       allowPanelClick: options.allowPanelClick,
       openOnHover: options.openOnHover,
-      closeOnMouseleave: options.closeOnMouseleave
+      closeOnMouseleave: options.closeOnMouseleave,
+      wrapDataAttributes: options.wrapDataAttributes,
     };
     this.constants = {
       wrap: 'custom-select',
@@ -56,14 +58,14 @@ export default class Select {
     this._change();
   };
 
-  destroy() {
-    this._destroy();
-  };
+  // destroy() {
+  //   this._destroy();
+  // };
 
-  refresh() {
-    this.destroy();
-    this.init();
-  };
+  // refresh() {
+  //   this.destroy();
+  //   this.init();
+  // };
 
   select() {
     return this.el.parentNode;
@@ -115,6 +117,9 @@ export default class Select {
   };  
 
   closeSelect(e) {
+    if (!document.documentElement.classList.contains(this.constants.HAS_CUSTOM_SELECT)) {
+      return;
+    };
     if (e.target.closest(`[${this.constants.DATA_LABEL_INDEX}]`)) {
       return;
     };
@@ -325,7 +330,7 @@ export default class Select {
       };      
     };
 
-    if (this.options.panelItem.position === 'top') {
+    if (panelItemWrap && this.options.panelItem.position === 'top') {
       panel.appendChild(panelItemWrap);
     };
 
@@ -400,7 +405,7 @@ export default class Select {
       };
     };
 
-    if (this.options.panelItem.position === 'bottom') {
+    if (panelItemWrap && this.options.panelItem.position === 'bottom') {
       panel.appendChild(panelItemWrap);
     };
 
@@ -409,6 +414,10 @@ export default class Select {
     };   
 
     wrap.classList.add(this.constants.wrap);
+    if (this.options.wrapDataAttributes) {
+      this.addDataAttributes(this.el, wrap);
+    };    
+
     function addWrapClassName(condition, className) {
       if (condition) {
         wrap.classList.add(className);
@@ -483,13 +492,19 @@ export default class Select {
     };
   };
 
-  _destroy() {
-    document.removeEventListener('click', this.closeSelectBind);
-    document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
-    if (this.panel() && this.opener()) {
-      this.opener().parentNode.removeChild(this.opener());
-      this.panel().parentNode.removeChild(this.panel());
-      helpFunctions.unwrap(this.select());
-    };
-  };
+  // _destroy() {
+  //   // document.removeEventListener('click', this.closeSelectBind);
+  //   document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
+  //   const customWraps = [].slice.call(document.querySelectorAll(`.${this.constants.wrap}`));
+  //   customWraps.forEach((wrap) => {
+  //     const panel = wrap.querySelector(`.${this.constants.panel}`);
+  //     const opener = wrap.querySelector(`.${this.constants.opener}`);
+
+  //     if (panel && opener) {
+  //       opener.parentNode.removeChild(opener);
+  //       panel.parentNode.removeChild(panel);
+  //       helpFunctions.unwrap(wrap);
+  //     };
+  //   });    
+  // };
 };

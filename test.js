@@ -85,15 +85,6 @@ function wrap(el, wrapper) {
   el.parentNode.insertBefore(wrapper, el);
   wrapper.appendChild(el);
 }
-function unwrap(wrapper) {
-  var docFrag = document.createDocumentFragment();
-  while (wrapper.firstChild) {
-    var child = wrapper.removeChild(wrapper.firstChild);
-    docFrag.appendChild(child);
-  }
-
-  wrapper.parentNode.replaceChild(docFrag, wrapper);
-}
 function detectTouch() {
   return 'ontouchstart' in window || navigator.maxTouchPoints;
 }
@@ -145,13 +136,14 @@ var Select = function () {
     this.el = el;
     this.defaultParams = {
       optionBuilder: false,
-      panelItem: false,
+      panelItem: { position: '', item: '', className: '' },
       changeOpenerText: true,
       multipleSelectionOnSingleClick: true,
       multipleSelectOpenerText: { labels: false, array: false },
       allowPanelClick: false,
       openOnHover: false,
-      closeOnMouseleave: false
+      closeOnMouseleave: false,
+      wrapDataAttributes: false
     };
     options = Object.assign({}, this.defaultParams, options);
     this.options = {
@@ -162,7 +154,8 @@ var Select = function () {
       multipleSelectOpenerText: options.multipleSelectOpenerText,
       allowPanelClick: options.allowPanelClick,
       openOnHover: options.openOnHover,
-      closeOnMouseleave: options.closeOnMouseleave
+      closeOnMouseleave: options.closeOnMouseleave,
+      wrapDataAttributes: options.wrapDataAttributes
     };
     this.constants = {
       wrap: 'custom-select',
@@ -197,18 +190,18 @@ var Select = function () {
       this._change();
     }
   }, {
-    key: 'destroy',
-    value: function destroy() {
-      this._destroy();
-    }
-  }, {
-    key: 'refresh',
-    value: function refresh() {
-      this.destroy();
-      this.init();
-    }
-  }, {
     key: 'select',
+
+
+    // destroy() {
+    //   this._destroy();
+    // };
+
+    // refresh() {
+    //   this.destroy();
+    //   this.init();
+    // };
+
     value: function select() {
       return this.el.parentNode;
     }
@@ -260,7 +253,9 @@ var Select = function () {
   }, {
     key: 'closeSelect',
     value: function closeSelect(e) {
-      if (e.target.closest('[' + this.constants.DATA_LABEL_INDEX + ']')) {
+      if (!document.documentElement.classList.contains(this.constants.HAS_CUSTOM_SELECT)) {
+        return;
+      }      if (e.target.closest('[' + this.constants.DATA_LABEL_INDEX + ']')) {
         return;
       }
       var allOpenSelects = document.querySelectorAll('.' + this.constants.wrap + '.' + this.constants.IS_OPEN);
@@ -473,7 +468,7 @@ var Select = function () {
         }        if (typeof this.options.panelItem.item === 'string') {
           panelItemWrap.innerHTML = this.options.panelItem.item;
         }      }
-      if (this.options.panelItem.position === 'top') {
+      if (panelItemWrap && this.options.panelItem.position === 'top') {
         panel.appendChild(panelItemWrap);
       }
       if (optgroups.length > 0) {
@@ -534,13 +529,16 @@ var Select = function () {
         if (optionsWrap) {
           panel.appendChild(optionsWrap);
         }      }
-      if (this.options.panelItem.position === 'bottom') {
+      if (panelItemWrap && this.options.panelItem.position === 'bottom') {
         panel.appendChild(panelItemWrap);
       }
       if (this.options.allowPanelClick) {
         this.el.setAttribute(this.constants.DATA_ALLOW_PANEL_CLICK, '');
       }
       wrap$1.classList.add(this.constants.wrap);
+      if (this.options.wrapDataAttributes) {
+        this.addDataAttributes(this.el, wrap$1);
+      }
       function addWrapClassName(condition, className) {
         if (condition) {
           wrap$1.classList.add(className);
@@ -616,16 +614,6 @@ var Select = function () {
       for (var i = 0; i < customOptions.length; i++) {
         _loop(i);
       }    }
-  }, {
-    key: '_destroy',
-    value: function _destroy() {
-      document.removeEventListener('click', this.closeSelectBind);
-      document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
-      if (this.panel() && this.opener()) {
-        this.opener().parentNode.removeChild(this.opener());
-        this.panel().parentNode.removeChild(this.panel());
-        unwrap(this.select());
-      }    }
   }]);
   return Select;
 }();
@@ -634,17 +622,76 @@ var Select = function () {
 
 var selects = [].concat(toConsumableArray(document.querySelectorAll('.js-select')));
 
+var select = void 0;
+
 selects.forEach(function (selectEl) {
   var name = selectEl.getAttribute('data-type');
   var options = {
     multiple: {
       multipleSelectOpenerText: { array: true }
+    },
+    default: {
+      allowPanelClick: true,
+      wrapDataAttributes: true,
+      panelItem: {
+        position: 'top',
+        item: '<input type="text" />'
+      }
     }
   };
-  var select = new Select(selectEl, options[name]);
+  select = new Select(selectEl, options[name]);
   select.init();
 
   selectEl.addEventListener('change', function (e) {
-    console.log(e.currentTarget.value);
+    // console.log(e.currentTarget.value);
+  });
+
+  var wrap = selectEl.parentNode;
+  var opener = wrap.querySelector('.custom-select__opener');
+
+  var HAS_PLACEHOLDER = 'has-placeholder';
+  var placeholder = void 0;
+
+  [].slice.call(selectEl.options).forEach(function (option) {
+    if (option.value === 'placeholder') {
+      placeholder = option.innerText;
+      wrap.classList.add(HAS_PLACEHOLDER);
+      if (selectEl.multiple) {
+        opener.innerText = placeholder;
+      }    }  });
+
+  selectEl.addEventListener('change', function (e) {
+    if (e.currentTarget.value !== 'placeholder') {
+      wrap.classList.remove(HAS_PLACEHOLDER);
+    }    if (!e.currentTarget.value) {
+      wrap.classList.add(HAS_PLACEHOLDER);
+      opener.innerText = placeholder;
+    }  });
+});
+
+// buttons
+var btns = {
+  init: document.querySelector('.js-init'),
+  refresh: document.querySelector('.js-refresh'),
+  destroy: document.querySelector('.js-destroy')
+};
+
+var events = Object.keys(btns);
+
+Object.values(btns).forEach(function (btn, i) {
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (events[i] === 'destroy') {
+      // selects.forEach((el) => {
+      select.destroy();
+      // })
+    } else if (events[i] === 'refresh') {
+      select.refresh();
+    } else if (events[i] === 'init') {
+
+      selects.forEach(function (el) {
+        select.init();
+      });
+    }
   });
 });

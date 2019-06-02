@@ -16,6 +16,7 @@
   :root {
     --black: #000;
     --gray: #ccc;
+    --gray-light: rgba(204, 204, 204, .5);
     --white: #fff;
     --fz: 16px;
    }
@@ -39,6 +40,9 @@
       visibility: visible;
       opacity: 1;
     }
+    .custom-select.has-placeholder .custom-select__opener {
+      color: var(--gray-light);
+    }
     .custom-select__panel{
       visibility: hidden;
       opacity: 0;
@@ -60,6 +64,9 @@
       padding: calc(var(--padding) / 2) var(--padding);
       cursor: pointer;
     }
+    .custom-select__option[data-value="placeholder"] {
+      display: none;
+    }
     .custom-select__option:hover, .custom-select__option.is-selected {
       background-color: var(--gray);
     }
@@ -71,6 +78,13 @@
   </style>
 </head>
 <body>
+  <select name="" id="" class="js-select" data-type="default" data-select-something="select_something">
+    <option value="placeholder">this is placeholder</option>
+    <option value="1" data-option-somethig="option_something">bla1</option>
+    <option value="2">ba2</option>
+    <option value="3">bla3</option>
+  </select>
+
   <select name="" id="" class="js-select" data-type="default">
     <option value="1">bla1</option>
     <option value="2">ba2</option>
@@ -78,10 +92,15 @@
   </select>
 
   <select name="" id="" class="js-select" multiple="" data-type="multiple">
+    <option value="placeholder">this is placeholder</option>
     <option value="1">bla1</option>
     <option value="2">ba2</option>
     <option value="3">bla3</option>
   </select>
+
+  <button class="js-destroy">destroy</button>
+  <button class="js-refresh">refresh</button>
+  <button class="js-init">init</button>
 
 
   <script src="test.js"></script>

@@ -20,17 +20,8 @@ import Select from 'select-custom';
 const selects = [].slice.call(document.querySelectorAll('.js-select'));
 
 selects.forEach(function(el) {
-  const select = new Select(el, {options});
+  const select = new Select(el, { options });
   select.init();
-
-  //destroy
-  if (!select) return;
-  select.destroy();
-  select = null;
-
-  //refresh
-  if (!select) return;
-  select.refresh();
 });
 ```
 
@@ -145,20 +136,29 @@ selects.forEach((selectEl) => {
   select.init();
 
   // adding placeholder
-  if (selectEl.classList.contains('has-placeholder')) {
-    selectEl.parentNode.classList.add('has-placeholder');
-  };
+  const wrap = selectEl.parentNode;
+  const opener = wrap.querySelector('.custom-select__opener');  
+
+  const HAS_PLACEHOLDER = 'has-placeholder';
+  let placeholder;
+
+  [].slice.call(selectEl.options).forEach((option) => {
+    if (option.value === 'placeholder') {
+      placeholder = option.innerText;
+      wrap.classList.add(HAS_PLACEHOLDER);
+      if (selectEl.multiple) {
+        opener.innerText = placeholder;
+      };
+    };
+  });
 
   selectEl.addEventListener('change', (e) => {
-    const currSelect = e.currentTarget;
-    const selectType = select.dataset.type;
-
-    if (currSelect.value !== 'placeholder') {
-      currSelect.classList.add('has-placeholder-hidden');
-      currSelect.parentNode.classList.add('has-placeholder-hidden');
-    } else {
-      currSelect.classList.remove('has-placeholder');
-      currSelect.parentNode.classList.remove('has-placeholder-hidden');
+    if (e.currentTarget.value !== 'placeholder') {
+      wrap.classList.remove(HAS_PLACEHOLDER);
+    };
+    if (!e.currentTarget.value) {
+      wrap.classList.add(HAS_PLACEHOLDER);
+      opener.innerText = placeholder;
     };
   });
 });
