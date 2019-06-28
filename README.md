@@ -37,7 +37,8 @@ Standart options
   multipleSelectOpenerText: { labels: false, array: false },
   allowPanelClick: false,
   openOnHover: false,
-  closeOnMouseleave: false
+  closeOnMouseleave: false,
+  wrapDataAttributes: false
 }
 ```
 
@@ -58,6 +59,8 @@ If native select has attribute `multiple` - select allows multiple selection.
 `openOnHover` - if `true` - allows open on hover.
 
 `closeOnMouseleave` - if `true` - allows close on mouseleave.
+
+`wrapDataAttributes` - if `true` - data attributes from native `select` element will be added to custom wrap.
 
 Supports standart attributs `multiple`, `disabled`, `disabled` for `option`.
 

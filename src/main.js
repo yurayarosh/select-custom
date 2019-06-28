@@ -56,6 +56,7 @@ export default class Select {
     this._open();
     this._close();
     this._change();
+    this._trigerCustomEvents();
   };
 
   // destroy() {
@@ -106,14 +107,6 @@ export default class Select {
     };
 
     this.setPanelPosition();
-
-    if (this.onOpen && this.select().classList.contains(this.constants.IS_OPEN)) {
-      this.onOpen(this.el);
-    } else {
-      if (this.onClose) {
-        this.onClose(this.el);
-      };
-    };
   };  
 
   closeSelect(e) {
@@ -156,16 +149,7 @@ export default class Select {
       for (let i = 0; i < allOpenSelects.length; i++) {
         allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
       };
-    };
-
-    if (this.onClose && e.target.className.indexOf(this.constants.opener)) {
-      let elem = allOpenSelects[0].querySelector('select');
-      if (allOpenSelects.length > 1) {
-        console.warn('`onClose()` function does not have an argument due to several selects are open.');
-        return;
-      };
-      this.onClose(elem);
-    };
+    };    
   };
 
   setSelectedOptionsMultiple({clickedCustomOption, nativeOptionsList, item}) {
@@ -300,6 +284,26 @@ export default class Select {
         targetEl.setAttribute(attribute.name, attribute.value);
       });          
     };
+  };
+
+  _trigerCustomEvents() {
+    const observer = new MutationObserver(mutations => {
+      mutations.forEach(mutation => {
+        if (mutation.target.classList.contains(this.constants.IS_OPEN)) {
+          if (mutation.oldValue.indexOf(this.constants.IS_OPEN) === -1) {
+            if (this.onOpen) {
+              this.onOpen(mutation.target);
+            };
+          };          
+        } else if (mutation.oldValue.indexOf(this.constants.IS_OPEN) > 0) {
+          if (this.onClose) {
+            this.onClose(mutation.target);
+          };
+        };
+        
+      });
+    });
+    observer.observe(this.select(), { attributes: true, attributeOldValue: true, attributeFilter: ['class'] });
   };
 
   _createElements() {

@@ -15,7 +15,7 @@ selects.forEach((selectEl) => {
       multipleSelectOpenerText: { array: true }
     },
     default: {
-      allowPanelClick: true,
+      allowPanelClick: false,
       wrapDataAttributes: true,
       panelItem: {
         position: 'top',

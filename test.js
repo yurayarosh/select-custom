@@ -188,6 +188,7 @@ var Select = function () {
       this._open();
       this._close();
       this._change();
+      this._trigerCustomEvents();
     }
   }, {
     key: 'select',
@@ -243,13 +244,7 @@ var Select = function () {
         allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
       }
       this.setPanelPosition();
-
-      if (this.onOpen && this.select().classList.contains(this.constants.IS_OPEN)) {
-        this.onOpen(this.el);
-      } else {
-        if (this.onClose) {
-          this.onClose(this.el);
-        }      }    }
+    }
   }, {
     key: 'closeSelect',
     value: function closeSelect(e) {
@@ -283,14 +278,7 @@ var Select = function () {
         }      }      if (e.target.className.indexOf(this.constants.opener) === -1) {
         for (var i = 0; i < allOpenSelects.length; i++) {
           allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
-        }      }
-      if (this.onClose && e.target.className.indexOf(this.constants.opener)) {
-        var _elem = allOpenSelects[0].querySelector('select');
-        if (allOpenSelects.length > 1) {
-          console.warn('`onClose()` function does not have an argument due to several selects are open.');
-          return;
-        }        this.onClose(_elem);
-      }    }
+        }      }    }
   }, {
     key: 'setSelectedOptionsMultiple',
     value: function setSelectedOptionsMultiple(_ref) {
@@ -442,6 +430,24 @@ var Select = function () {
         });
       }    }
   }, {
+    key: '_trigerCustomEvents',
+    value: function _trigerCustomEvents() {
+      var _this3 = this;
+
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.target.classList.contains(_this3.constants.IS_OPEN)) {
+            if (mutation.oldValue.indexOf(_this3.constants.IS_OPEN) === -1) {
+              if (_this3.onOpen) {
+                _this3.onOpen(mutation.target);
+              }            }          } else if (mutation.oldValue.indexOf(_this3.constants.IS_OPEN) > 0) {
+            if (_this3.onClose) {
+              _this3.onClose(mutation.target);
+            }          }        });
+      });
+      observer.observe(this.select(), { attributes: true, attributeOldValue: true, attributeFilter: ['class'] });
+    }
+  }, {
     key: '_createElements',
     value: function _createElements() {
       var wrap$1 = document.createElement('div');
@@ -576,19 +582,19 @@ var Select = function () {
   }, {
     key: '_change',
     value: function _change() {
-      var _this3 = this;
+      var _this4 = this;
 
       var options = this.el.options;
       var customOptions = this.select().querySelectorAll('.' + this.constants.option);
 
       var _loop = function _loop(i) {
         customOptions[i].addEventListener('click', function (e) {
-          if (_this3.el.disabled) return;
+          if (_this4.el.disabled) return;
 
           var clickedCustomOption = e.currentTarget;
-          if (clickedCustomOption.classList.contains(_this3.constants.IS_DISABLED)) return;
+          if (clickedCustomOption.classList.contains(_this4.constants.IS_DISABLED)) return;
 
-          _this3.setSelectedOptions({
+          _this4.setSelectedOptions({
             e: e,
             clickedCustomOption: clickedCustomOption,
             nativeOptionsList: options,
@@ -596,18 +602,18 @@ var Select = function () {
             item: i
           });
 
-          _this3.dispatchEvent(_this3.el);
+          _this4.dispatchEvent(_this4.el);
 
-          if (_this3.options.changeOpenerText) {
-            if (_this3.el.multiple && _this3.options.multipleSelectOpenerText.array) {
-              if (_this3.getSelectOptionsText(_this3.el)) {
-                _this3.opener().innerHTML = _this3.getSelectOptionsText(_this3.el);
-              }            } else if (_this3.el.multiple && _this3.options.multipleSelectOpenerText.labels) {
-              _this3.setSelectOptionsItems(clickedCustomOption);
-            } else if (_this3.el.multiple && !_this3.options.multipleSelectOpenerText) {
-              _this3.opener().innerHTML = _this3.opener().innerHTML;
+          if (_this4.options.changeOpenerText) {
+            if (_this4.el.multiple && _this4.options.multipleSelectOpenerText.array) {
+              if (_this4.getSelectOptionsText(_this4.el)) {
+                _this4.opener().innerHTML = _this4.getSelectOptionsText(_this4.el);
+              }            } else if (_this4.el.multiple && _this4.options.multipleSelectOpenerText.labels) {
+              _this4.setSelectOptionsItems(clickedCustomOption);
+            } else if (_this4.el.multiple && !_this4.options.multipleSelectOpenerText) {
+              _this4.opener().innerHTML = _this4.opener().innerHTML;
             } else {
-              _this3.opener().innerHTML = clickedCustomOption.innerText;
+              _this4.opener().innerHTML = clickedCustomOption.innerText;
             }          }        });
       };
 
@@ -631,7 +637,7 @@ selects.forEach(function (selectEl) {
       multipleSelectOpenerText: { array: true }
     },
     default: {
-      allowPanelClick: true,
+      allowPanelClick: false,
       wrapDataAttributes: true,
       panelItem: {
         position: 'top',
