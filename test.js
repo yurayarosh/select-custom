@@ -275,7 +275,8 @@ var Select = function () {
         }
         if (elem.hasAttribute(this.constants.DATA_HAS_PANEL_ITEM)) {
           if (checkTarget(e, this.constants.panelItemClassName)) return;
-        }      }      if (e.target.className.indexOf(this.constants.opener) === -1) {
+        }      }
+      if (e.target.className.indexOf(this.constants.opener) === -1) {
         for (var i = 0; i < allOpenSelects.length; i++) {
           allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
         }      }    }
@@ -441,6 +442,7 @@ var Select = function () {
               if (_this3.onOpen) {
                 _this3.onOpen(mutation.target);
               }            }          } else if (mutation.oldValue.indexOf(_this3.constants.IS_OPEN) > 0) {
+            _this3.panel().classList.remove(_this3.constants.IS_ABOVE);
             if (_this3.onClose) {
               _this3.onClose(mutation.target);
             }          }        });

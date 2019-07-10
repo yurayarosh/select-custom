@@ -145,6 +145,7 @@ export default class Select {
         if (checkTarget(e, this.constants.panelItemClassName)) return;
       };       
     };
+
     if (e.target.className.indexOf(this.constants.opener) === -1) {
       for (let i = 0; i < allOpenSelects.length; i++) {
         allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
@@ -296,6 +297,7 @@ export default class Select {
             };
           };          
         } else if (mutation.oldValue.indexOf(this.constants.IS_OPEN) > 0) {
+          this.panel().classList.remove(this.constants.IS_ABOVE);
           if (this.onClose) {
             this.onClose(mutation.target);
           };

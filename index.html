@@ -12,6 +12,7 @@
   }
   body {
     padding: 20px;
+    padding-top: 90vh;
   }
   :root {
     --black: #000;
@@ -53,6 +54,10 @@
       background-color: var(--white);
       z-index: 1;
       border: var(--border);
+    }
+    .custom-select__panel.is-above {
+      bottom: 100%;
+      top: auto;
     }
     .custom-select__opener {
       min-height: var(--field-height);
