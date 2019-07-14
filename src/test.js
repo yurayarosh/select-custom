@@ -12,7 +12,7 @@ selects.forEach((selectEl) => {
   const name = selectEl.getAttribute('data-type');
   const options = {
     multiple: {
-      multipleSelectOpenerText: { array: true }
+      multipleSelectOpenerText: { labels: true }
     },
     default: {
       allowPanelClick: false,

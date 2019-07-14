@@ -275,8 +275,7 @@ var Select = function () {
         }
         if (elem.hasAttribute(this.constants.DATA_HAS_PANEL_ITEM)) {
           if (checkTarget(e, this.constants.panelItemClassName)) return;
-        }      }
-      if (e.target.className.indexOf(this.constants.opener) === -1) {
+        }      }      if (e.target.className.indexOf(this.constants.opener) === -1) {
         for (var i = 0; i < allOpenSelects.length; i++) {
           allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
         }      }    }
@@ -388,12 +387,16 @@ var Select = function () {
       });
 
       var index = +customOption.getAttribute(this.constants.DATA_LABEL_INDEX);
+      var currentLabel = this.opener().querySelector('[' + this.constants.DATA_LABEL_INDEX + '="' + index + '"]');
 
       if (customOption.classList.contains(this.constants.IS_SELECTED)) {
-        this.opener().appendChild(labels[index]);
+        if (!this.opener().children.length) {
+          this.opener().innerHTML = '';
+        }        this.opener().appendChild(labels[index]);
       } else {
-        this.opener().removeChild(this.opener().querySelector('[' + this.constants.DATA_LABEL_INDEX + '="' + index + '"]'));
-      }
+        if (currentLabel) {
+          this.opener().removeChild(currentLabel);
+        }      }
       function removeLabel(e) {
         var _this2 = this;
 
@@ -410,9 +413,9 @@ var Select = function () {
           }        });
 
         this.dispatchEvent(this.el);
-
-        label.parentNode.removeChild(label);
-      }
+        if (label.parentNode) {
+          label.parentNode.removeChild(label);
+        }      }
       labels.forEach(function (label) {
         label.querySelector('button').addEventListener('click', removeLabel.bind(_this));
       });
@@ -636,7 +639,7 @@ selects.forEach(function (selectEl) {
   var name = selectEl.getAttribute('data-type');
   var options = {
     multiple: {
-      multipleSelectOpenerText: { array: true }
+      multipleSelectOpenerText: { labels: true }
     },
     default: {
       allowPanelClick: false,

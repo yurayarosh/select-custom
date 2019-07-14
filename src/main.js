@@ -145,7 +145,6 @@ export default class Select {
         if (checkTarget(e, this.constants.panelItemClassName)) return;
       };       
     };
-
     if (e.target.className.indexOf(this.constants.opener) === -1) {
       for (let i = 0; i < allOpenSelects.length; i++) {
         allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
@@ -242,12 +241,18 @@ export default class Select {
       option.setAttribute(this.constants.DATA_LABEL_INDEX, i);
     });
 
-    const index = +customOption.getAttribute(this.constants.DATA_LABEL_INDEX);    
+    const index = +customOption.getAttribute(this.constants.DATA_LABEL_INDEX);
+    const currentLabel = this.opener().querySelector(`[${this.constants.DATA_LABEL_INDEX}="${index}"]`);
 
     if (customOption.classList.contains(this.constants.IS_SELECTED)) {
+      if (!this.opener().children.length) {
+        this.opener().innerHTML = '';
+      };
       this.opener().appendChild(labels[index]);
     } else {
-      this.opener().removeChild(this.opener().querySelector(`[${this.constants.DATA_LABEL_INDEX}="${index}"]`));
+      if (currentLabel) {
+        this.opener().removeChild(currentLabel);
+      };      
     };
 
     function removeLabel(e) {
@@ -266,8 +271,9 @@ export default class Select {
       });
 
       this.dispatchEvent(this.el);
-
-      label.parentNode.removeChild(label);      
+      if (label.parentNode) {
+        label.parentNode.removeChild(label);
+      };            
     };
 
     labels.forEach((label) => {
