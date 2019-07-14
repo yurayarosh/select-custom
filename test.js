@@ -85,6 +85,15 @@ function wrap(el, wrapper) {
   el.parentNode.insertBefore(wrapper, el);
   wrapper.appendChild(el);
 }
+function unwrap(wrapper) {
+  var docFrag = document.createDocumentFragment();
+  while (wrapper.firstChild) {
+    var child = wrapper.removeChild(wrapper.firstChild);
+    docFrag.appendChild(child);
+  }
+
+  wrapper.parentNode.replaceChild(docFrag, wrapper);
+}
 function detectTouch() {
   return 'ontouchstart' in window || navigator.maxTouchPoints;
 }
@@ -191,12 +200,13 @@ var Select = function () {
       this._trigerCustomEvents();
     }
   }, {
+    key: 'destroy',
+    value: function destroy() {
+      this._destroy();
+    }
+  }, {
     key: 'select',
 
-
-    // destroy() {
-    //   this._destroy();
-    // };
 
     // refresh() {
     //   this.destroy();
@@ -625,6 +635,24 @@ var Select = function () {
       for (var i = 0; i < customOptions.length; i++) {
         _loop(i);
       }    }
+  }, {
+    key: '_destroy',
+    value: function _destroy() {
+      var _this5 = this;
+
+      document.removeEventListener('click', this.closeSelectBind);
+      document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
+      var customWraps = [].slice.call(document.querySelectorAll('.' + this.constants.wrap));
+      customWraps.forEach(function (wrap) {
+        var panel = wrap.querySelector('.' + _this5.constants.panel);
+        var opener = wrap.querySelector('.' + _this5.constants.opener);
+
+        if (panel && opener) {
+          opener.parentNode.removeChild(opener);
+          panel.parentNode.removeChild(panel);
+          unwrap(wrap);
+        }      });
+    }
   }]);
   return Select;
 }();
@@ -634,6 +662,8 @@ var Select = function () {
 var selects = [].concat(toConsumableArray(document.querySelectorAll('.js-select')));
 
 var select = void 0;
+
+var selectObjects = [];
 
 selects.forEach(function (selectEl) {
   var name = selectEl.getAttribute('data-type');
@@ -652,6 +682,7 @@ selects.forEach(function (selectEl) {
   };
   select = new Select(selectEl, options[name]);
   select.init();
+  selectObjects.push(select);
 
   selectEl.addEventListener('change', function (e) {
     // console.log(e.currentTarget.value);
@@ -693,14 +724,14 @@ Object.values(btns).forEach(function (btn, i) {
   btn.addEventListener('click', function (e) {
     e.preventDefault();
     if (events[i] === 'destroy') {
-      // selects.forEach((el) => {
-      select.destroy();
-      // })
+      selectObjects.forEach(function (select) {
+        select.destroy();
+      });
     } else if (events[i] === 'refresh') {
       select.refresh();
     } else if (events[i] === 'init') {
 
-      selects.forEach(function (el) {
+      selectObjects.forEach(function (select) {
         select.init();
       });
     }

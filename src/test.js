@@ -8,6 +8,8 @@ const selects = [...document.querySelectorAll('.js-select')];
 
 let select;
 
+const selectObjects = [];
+
 selects.forEach((selectEl) => {
   const name = selectEl.getAttribute('data-type');
   const options = {
@@ -25,6 +27,7 @@ selects.forEach((selectEl) => {
   };
   select = new Select(selectEl, options[name]);
   select.init();
+  selectObjects.push(select);
 
   selectEl.addEventListener('change', (e) => {
     // console.log(e.currentTarget.value);
@@ -72,15 +75,15 @@ selects.forEach((selectEl) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       if (events[i] === 'destroy') {
-        // selects.forEach((el) => {
-          select.destroy();
-        // })
+          selectObjects.forEach(select => {
+            select.destroy();
+          });
         
       } else if (events[i] === 'refresh') {
         select.refresh();
       } else if (events[i] === 'init') {
         
-        selects.forEach((el) => {
+        selectObjects.forEach((select) => {
           select.init();
         })
       }

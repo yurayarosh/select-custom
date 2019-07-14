@@ -59,9 +59,9 @@ export default class Select {
     this._trigerCustomEvents();
   };
 
-  // destroy() {
-  //   this._destroy();
-  // };
+  destroy() {
+    this._destroy();
+  };
 
   // refresh() {
   //   this.destroy();
@@ -504,19 +504,19 @@ export default class Select {
     };
   };
 
-  // _destroy() {
-  //   // document.removeEventListener('click', this.closeSelectBind);
-  //   document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
-  //   const customWraps = [].slice.call(document.querySelectorAll(`.${this.constants.wrap}`));
-  //   customWraps.forEach((wrap) => {
-  //     const panel = wrap.querySelector(`.${this.constants.panel}`);
-  //     const opener = wrap.querySelector(`.${this.constants.opener}`);
+  _destroy() {
+    document.removeEventListener('click', this.closeSelectBind);
+    document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
+    const customWraps = [].slice.call(document.querySelectorAll(`.${this.constants.wrap}`));
+    customWraps.forEach((wrap) => {
+      const panel = wrap.querySelector(`.${this.constants.panel}`);
+      const opener = wrap.querySelector(`.${this.constants.opener}`);
 
-  //     if (panel && opener) {
-  //       opener.parentNode.removeChild(opener);
-  //       panel.parentNode.removeChild(panel);
-  //       helpFunctions.unwrap(wrap);
-  //     };
-  //   });    
-  // };
+      if (panel && opener) {
+        opener.parentNode.removeChild(opener);
+        panel.parentNode.removeChild(panel);
+        helpFunctions.unwrap(wrap);
+      };
+    });
+  };
 };
