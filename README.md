@@ -2,7 +2,7 @@
 
 ### Example
 
-  * [Codesandbox](https://codesandbox.io/s/fullpage-pagination-example-srixb)
+  * [Codesandbox](https://codesandbox.io/s/krcji)
 
 ### Install
 
@@ -98,7 +98,7 @@ select.onClose = (select) => {
 select.init();
 
 ```
-Destroy method (for proper using watch example on [Codesandbox](https://codesandbox.io/s/fullpage-pagination-example-srixb))
+Destroy method (for proper using watch example on [Codesandbox](https://codesandbox.io/s/krcji))
 ```js
 select.destroy();
 ```
