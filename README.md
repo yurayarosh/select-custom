@@ -1,5 +1,9 @@
 # select-custom
 
+### Example
+
+  * [Codesandbox](https://codesandbox.io/s/fullpage-pagination-example-srixb)
+
 ### Install
 
 ```html
@@ -94,7 +98,7 @@ select.onClose = (select) => {
 select.init();
 
 ```
-Destroy method(for proper using wathc example on Codesandbox)
+Destroy method (for proper using watch example on [Codesandbox](https://codesandbox.io/s/fullpage-pagination-example-srixb))
 ```js
 select.destroy();
 ```
