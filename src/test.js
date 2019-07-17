@@ -65,7 +65,7 @@ selects.forEach((selectEl) => {
 // buttons
   const btns = {
     init: document.querySelector('.js-init'),
-    refresh: document.querySelector('.js-refresh'),
+    destroy_2: document.querySelector('.js-destroy-2'),
     destroy: document.querySelector('.js-destroy')
   };
 
@@ -75,14 +75,16 @@ selects.forEach((selectEl) => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       if (events[i] === 'destroy') {
-          selectObjects.forEach(select => {
-            select.destroy();
-          });
+        selectObjects[0].destroy();
+          // selectObjects.forEach(select => {
+          //   select.destroy();
+          // });
         
-      } else if (events[i] === 'refresh') {
-        select.refresh();
-      } else if (events[i] === 'init') {
-        
+      } else if (events[i] === 'destroy_2') {
+        // selectObjects[1].destroy();
+        // selectObjects[2].destroy();
+        // selectObjects[0].destroy();
+      } else if (events[i] === 'init') {        
         selectObjects.forEach((select) => {
           select.init();
         })

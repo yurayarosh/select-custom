@@ -42,6 +42,7 @@ export default class Select {
       IS_SELECTED: 'is-selected',
       IS_ABOVE: 'is-above',
       HAS_CUSTOM_SELECT: 'has-custom-select',
+      HAS_UNUSED_CLOSE_FUNCTION: 'has-unused-close-custom-select-function',
       DATA_ALLOW_PANEL_CLICK: 'data-allow-panel-click',
       DATA_LABEL: 'data-label',
       DATA_VALUE: 'data-value',
@@ -62,11 +63,6 @@ export default class Select {
   destroy() {
     this._destroy();
   };
-
-  // refresh() {
-  //   this.destroy();
-  //   this.init();
-  // };
 
   select() {
     return this.el.parentNode;
@@ -110,9 +106,13 @@ export default class Select {
   };  
 
   closeSelect(e) {
+    if(document.documentElement.classList.contains(this.constants.HAS_UNUSED_CLOSE_FUNCTION)) {
+      console.warn('You have unused `closeSelect` function, triggering on document click. You shoud remove it, by using `destroy()` method to the first select element.');
+    };
     if (!document.documentElement.classList.contains(this.constants.HAS_CUSTOM_SELECT)) {
       return;
     };
+
     if (e.target.closest(`[${this.constants.DATA_LABEL_INDEX}]`)) {
       return;
     };
@@ -464,6 +464,8 @@ export default class Select {
     this.closeSelectBind = this.closeSelect.bind(this);
     document.addEventListener('click', this.closeSelectBind);
     document.documentElement.classList.add(this.constants.HAS_CUSTOM_SELECT);
+
+    this.closeSelectAdded = true;
   };
 
   _change() {
@@ -505,18 +507,25 @@ export default class Select {
   };
 
   _destroy() {
-    document.removeEventListener('click', this.closeSelectBind);
-    document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
-    const customWraps = [].slice.call(document.querySelectorAll(`.${this.constants.wrap}`));
-    customWraps.forEach((wrap) => {
-      const panel = wrap.querySelector(`.${this.constants.panel}`);
-      const opener = wrap.querySelector(`.${this.constants.opener}`);
+    if(this.select().classList.contains(this.constants.wrap)) {
+      this.opener().parentNode.removeChild(this.opener());
+      this.panel().parentNode.removeChild(this.panel());
+      helpFunctions.unwrap(this.select());
+      this.el.removeAttribute(this.constants.DATA_HAS_PANEL_ITEM);
+      this.el.removeAttribute(this.constants.DATA_ALLOW_PANEL_CLICK);
+    };    
 
-      if (panel && opener) {
-        opener.parentNode.removeChild(opener);
-        panel.parentNode.removeChild(panel);
-        helpFunctions.unwrap(wrap);
-      };
-    });
+    const elseSelects = document.querySelectorAll(`.${this.constants.wrap}`);
+
+    if(!elseSelects.length) {      
+      document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
+
+      if (this.closeSelectAdded) {
+        document.removeEventListener('click', this.closeSelectBind);
+        document.documentElement.classList.remove(this.constants.HAS_UNUSED_CLOSE_FUNCTION);
+      } else {
+        document.documentElement.classList.add(this.constants.HAS_UNUSED_CLOSE_FUNCTION);
+      }
+    };
   };
 };
