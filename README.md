@@ -77,6 +77,8 @@ el.addEventListener('change', (e) => {
 
 ```
 
+### Methods
+
 On open and on close custom select
 ```js
 const select = new Select(el, { options });
@@ -91,6 +93,10 @@ select.onClose = (select) => {
 
 select.init();
 
+```
+Destroy method(for proper using wathc example on Codesandbox)
+```js
+select.destroy();
 ```
 
 ### Example
