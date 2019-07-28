@@ -370,11 +370,11 @@ var Select = function () {
     }
   }, {
     key: 'setSelectOptionsItems',
-    value: function setSelectOptionsItems(customOption) {
+    value: function setSelectOptionsItems(customOption, select, opener) {
       var _this = this;
 
       var customOptions = [].slice.call(customOption.parentNode.children);
-      var options = [].slice.call(this.select().querySelectorAll('option'));
+      var options = [].slice.call(select.options);
 
       var labels = customOptions.map(function (option, i) {
         var label = document.createElement('span');
@@ -394,15 +394,15 @@ var Select = function () {
       });
 
       var index = +customOption.getAttribute(this.constants.DATA_LABEL_INDEX);
-      var currentLabel = this.opener().querySelector('[' + this.constants.DATA_LABEL_INDEX + '="' + index + '"]');
+      var currentLabel = opener.querySelector('[' + this.constants.DATA_LABEL_INDEX + '="' + index + '"]');
 
       if (customOption.classList.contains(this.constants.IS_SELECTED)) {
-        if (!this.opener().children.length) {
-          this.opener().innerHTML = '';
-        }        this.opener().appendChild(labels[index]);
+        if (!opener.children.length) {
+          opener.innerHTML = '';
+        }        opener.appendChild(labels[index]);
       } else {
         if (currentLabel) {
-          this.opener().removeChild(currentLabel);
+          opener.removeChild(currentLabel);
         }      }
       function removeLabel(e) {
         var _this2 = this;
@@ -462,6 +462,8 @@ var Select = function () {
   }, {
     key: '_createElements',
     value: function _createElements() {
+      var _this4 = this;
+
       var wrap$1 = document.createElement('div');
       var panel = document.createElement('div');
       var opener = document.createElement('div');
@@ -524,6 +526,8 @@ var Select = function () {
         if (optionsWrap) {
           panel.appendChild(optionsWrap);
         }      } else {
+        var selectedOptions = [];
+
         for (var _i = 0; _i < options.length; _i++) {
           var _customOption = document.createElement('div');
           _customOption.classList.add(this.constants.option);
@@ -532,10 +536,16 @@ var Select = function () {
 
           this.addDataAttributes(options[_i], _customOption);
 
-          if (options[_i].selected) {
-            _customOption.classList.add(this.constants.IS_SELECTED);
-            opener.innerHTML = options[_i].innerHTML;
-          }          if (options[_i].disabled) {
+          if (this.el.multiple) {
+            if (options[_i].selected) {
+              _customOption.classList.add(this.constants.IS_SELECTED);
+              selectedOptions.push(_customOption);
+            }          } else {
+            if (options[_i].selected) {
+              _customOption.classList.add(this.constants.IS_SELECTED);
+              opener.innerHTML = options[_i].innerHTML;
+            }          }
+          if (options[_i].disabled) {
             _customOption.classList.add(this.constants.IS_DISABLED);
           }          this.addOptionItem(options[_i], _customOption);
 
@@ -543,6 +553,19 @@ var Select = function () {
             optionsWrap.appendChild(_customOption);
           } else {
             panel.appendChild(_customOption);
+          }        }
+        if (selectedOptions.length > 0) {
+          var texts = selectedOptions.map(function (option) {
+            return option.innerText;
+          });
+
+          if (this.options.multipleSelectOpenerText.array) {
+            opener.innerHTML = texts;
+          }
+          if (this.options.multipleSelectOpenerText.labels) {
+            selectedOptions.forEach(function (option) {
+              _this4.setSelectOptionsItems(option, _this4.el, opener);
+            });
           }        }
         if (optionsWrap) {
           panel.appendChild(optionsWrap);
@@ -596,19 +619,19 @@ var Select = function () {
   }, {
     key: '_change',
     value: function _change() {
-      var _this4 = this;
+      var _this5 = this;
 
       var options = this.el.options;
       var customOptions = this.select().querySelectorAll('.' + this.constants.option);
 
       var _loop = function _loop(i) {
         customOptions[i].addEventListener('click', function (e) {
-          if (_this4.el.disabled) return;
+          if (_this5.el.disabled) return;
 
           var clickedCustomOption = e.currentTarget;
-          if (clickedCustomOption.classList.contains(_this4.constants.IS_DISABLED)) return;
+          if (clickedCustomOption.classList.contains(_this5.constants.IS_DISABLED)) return;
 
-          _this4.setSelectedOptions({
+          _this5.setSelectedOptions({
             e: e,
             clickedCustomOption: clickedCustomOption,
             nativeOptionsList: options,
@@ -616,18 +639,18 @@ var Select = function () {
             item: i
           });
 
-          _this4.dispatchEvent(_this4.el);
+          _this5.dispatchEvent(_this5.el);
 
-          if (_this4.options.changeOpenerText) {
-            if (_this4.el.multiple && _this4.options.multipleSelectOpenerText.array) {
-              if (_this4.getSelectOptionsText(_this4.el)) {
-                _this4.opener().innerHTML = _this4.getSelectOptionsText(_this4.el);
-              }            } else if (_this4.el.multiple && _this4.options.multipleSelectOpenerText.labels) {
-              _this4.setSelectOptionsItems(clickedCustomOption);
-            } else if (_this4.el.multiple && !_this4.options.multipleSelectOpenerText) {
-              _this4.opener().innerHTML = _this4.opener().innerHTML;
+          if (_this5.options.changeOpenerText) {
+            if (_this5.el.multiple && _this5.options.multipleSelectOpenerText.array) {
+              if (_this5.getSelectOptionsText(_this5.el)) {
+                _this5.opener().innerHTML = _this5.getSelectOptionsText(_this5.el);
+              }            } else if (_this5.el.multiple && _this5.options.multipleSelectOpenerText.labels) {
+              _this5.setSelectOptionsItems(clickedCustomOption, _this5.el, _this5.opener());
+            } else if (_this5.el.multiple && !_this5.options.multipleSelectOpenerText) {
+              _this5.opener().innerHTML = _this5.opener().innerHTML;
             } else {
-              _this4.opener().innerHTML = clickedCustomOption.innerText;
+              _this5.opener().innerHTML = clickedCustomOption.innerText;
             }          }        });
       };
 
@@ -660,81 +683,133 @@ var Select = function () {
   return Select;
 }();
 
-// commands
-
-var selects = [].concat(toConsumableArray(document.querySelectorAll('.js-select')));
-
-var select = void 0;
-
-var selectObjects = [];
-
-selects.forEach(function (selectEl) {
-  var name = selectEl.getAttribute('data-type');
-  var options = {
-    multiple: {
-      multipleSelectOpenerText: { labels: true }
-    },
-    default: {
-      allowPanelClick: false,
-      wrapDataAttributes: true,
-      panelItem: {
-        position: 'top',
-        item: '<input type="text" />'
-      }
-    }
-  };
-  select = new Select(selectEl, options[name]);
-  select.init();
-  selectObjects.push(select);
-
-  selectEl.addEventListener('change', function (e) {
-    // console.log(e.currentTarget.value);
-  });
-
-  var wrap = selectEl.parentNode;
-  var opener = wrap.querySelector('.custom-select__opener');
+function addSelectsPlaceholder() {
+  var _this = this;
 
   var HAS_PLACEHOLDER = 'has-placeholder';
+
   var placeholder = void 0;
-
-  [].slice.call(selectEl.options).forEach(function (option) {
-    if (option.value === 'placeholder') {
+  [].slice.call(this.select.options).forEach(function (option) {
+    if (option.value === "placeholder") {
       placeholder = option.innerText;
-      wrap.classList.add(HAS_PLACEHOLDER);
-      if (selectEl.multiple) {
-        opener.innerText = placeholder;
-      }    }  });
-
-  selectEl.addEventListener('change', function (e) {
-    if (e.currentTarget.value !== 'placeholder') {
-      wrap.classList.remove(HAS_PLACEHOLDER);
-    }    if (!e.currentTarget.value) {
-      wrap.classList.add(HAS_PLACEHOLDER);
-      opener.innerText = placeholder;
-    }  });
-});
-
-// buttons
-var btns = {
-  init: document.querySelector('.js-init'),
-  destroy_2: document.querySelector('.js-destroy-2'),
-  destroy: document.querySelector('.js-destroy')
-};
-
-var events = Object.keys(btns);
-
-Object.values(btns).forEach(function (btn, i) {
-  btn.addEventListener('click', function (e) {
-    e.preventDefault();
-    if (events[i] === 'destroy') {
-      selectObjects[0].destroy();
-      // selectObjects.forEach(select => {
-      //   select.destroy();
-      // });
-    } else if (events[i] === 'destroy_2') ; else if (events[i] === 'init') {
-      selectObjects.forEach(function (select) {
-        select.init();
-      });
+    }
+    if (option.value === "placeholder" && option.selected) {
+      placeholder = option.innerText;
+      _this.wrap.classList.add(HAS_PLACEHOLDER);
+      if (_this.select.multiple) {
+        _this.opener.innerText = placeholder;
+      }
     }
   });
-});
+
+  this.select.addEventListener("change", function (e) {
+    if (e.currentTarget.value !== "placeholder") {
+      _this.wrap.classList.remove(HAS_PLACEHOLDER);
+    }
+    if (!e.currentTarget.value) {
+      _this.wrap.classList.add(HAS_PLACEHOLDER);
+      _this.opener.innerText = placeholder;
+    }
+  });
+}
+
+function filterSearch() {
+  var _this = this;
+
+  if (!this.input) return;
+
+  this.input.addEventListener("input", function (e) {
+    var filter = e.currentTarget.value.toUpperCase();
+    _this.options.forEach(function (option) {
+      var textValue = option.innerText;
+      if (textValue.toUpperCase().indexOf(filter) > -1) {
+        option.style.display = "";
+      } else {
+        option.style.display = "none";
+      }
+    });
+  });
+}
+
+var CustomSelect = function () {
+  function CustomSelect(select) {
+    classCallCheck(this, CustomSelect);
+
+    this.select = select;
+    this.name = select.dataset.type;
+    // ================ plugin options ======================
+    this.parameters = {
+      default: {},
+      multiple: {
+        multipleSelectOpenerText: { array: true }
+      },
+      with_input: {
+        panelItem: {
+          position: "top",
+          item: '<input type="text" class="js-search" placeholder="This is search input" />'
+        }
+      }
+    };
+    // ================ plugin options ======================
+  }
+
+  // ================ select elements ======================
+
+
+  createClass(CustomSelect, [{
+    key: "init",
+
+    // ================ select elements ======================
+
+    value: function init() {
+      // ================ plugin initialization ======================
+      this.Select = new Select(this.select, this.parameters[this.name]);
+      this.Select.init();
+      // ================ plugin initialization ======================
+
+      // ================ helpers ======================
+      addSelectsPlaceholder.call(this);
+      filterSearch.call(this);
+      // ================ helpers ======================
+    }
+  }, {
+    key: "wrap",
+    get: function get() {
+      return this.select.parentNode;
+    }
+  }, {
+    key: "opener",
+    get: function get() {
+      return this.wrap.querySelector(".custom-select__opener");
+    }
+  }, {
+    key: "panel",
+    get: function get() {
+      return this.wrap.querySelector(".custom-select__panel");
+    }
+  }, {
+    key: "options",
+    get: function get() {
+      return [].concat(toConsumableArray(this.wrap.querySelectorAll(".custom-select__option")));
+    }
+  }, {
+    key: "input",
+    get: function get() {
+      return this.wrap.querySelector(".js-search");
+    }
+  }]);
+  return CustomSelect;
+}();
+
+// ================ main initialization ======================
+function setSelects() {
+  var selects = [].concat(toConsumableArray(document.querySelectorAll(".js-select")));
+  if (!selects.length) return;
+  // objects to proper destroy and reinit methods
+
+  selects.forEach(function (select) {
+    var customSelect = new CustomSelect(select);
+    customSelect.init();
+  });
+}
+setSelects();

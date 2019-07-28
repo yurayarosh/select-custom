@@ -1,94 +1,76 @@
-// commands
-// rollup -c -w watch files
-// rollup -c - bundle files
+import Select from "./main";
+// import addOptionIcons from "./test-components/addOptionIcons";
+import addSelectsPlaceholder from "./test-components/addSelectsPlaceholder";
+import filterSearch from "./test-components/filterSearch";
 
-import Select from './main.js';
-
-const selects = [...document.querySelectorAll('.js-select')];
-
-let select;
-
-const selectObjects = [];
-
-selects.forEach((selectEl) => {
-  const name = selectEl.getAttribute('data-type');
-  const options = {
-    multiple: {
-      multipleSelectOpenerText: { labels: true }
-    },
-    default: {
-      allowPanelClick: false,
-      wrapDataAttributes: true,
-      panelItem: {
-        position: 'top',
-        item: '<input type="text" />'
+class CustomSelect {
+  constructor(select) {
+    this.select = select;
+    this.name = select.dataset.type;
+    // ================ plugin options ======================
+    this.parameters = {
+      default: {},
+      multiple: {
+        multipleSelectOpenerText: { array: true }
+      },
+      with_input: {
+        panelItem: {
+          position: "top",
+          item:
+            '<input type="text" class="js-search" placeholder="This is search input" />'
+        }
       }
-    }
-  };
-  select = new Select(selectEl, options[name]);
-  select.init();
-  selectObjects.push(select);
-
-  selectEl.addEventListener('change', (e) => {
-    // console.log(e.currentTarget.value);
-  });
-
-  const wrap = selectEl.parentNode;
-  const opener = wrap.querySelector('.custom-select__opener');  
-
-  const HAS_PLACEHOLDER = 'has-placeholder';
-  let placeholder;
-
-  [].slice.call(selectEl.options).forEach((option) => {
-    if (option.value === 'placeholder') {
-      placeholder = option.innerText;
-      wrap.classList.add(HAS_PLACEHOLDER);
-      if (selectEl.multiple) {
-        opener.innerText = placeholder;
-      };
     };
+    // ================ plugin options ======================
+  }
+
+  // ================ select elements ======================
+  get wrap() {
+    return this.select.parentNode;
+  }
+  get opener() {
+    return this.wrap.querySelector(".custom-select__opener");
+  }
+  get panel() {
+    return this.wrap.querySelector(".custom-select__panel");
+  }
+  get options() {
+    return [...this.wrap.querySelectorAll(".custom-select__option")];
+  }
+  get input() {
+    return this.wrap.querySelector(".js-search");
+  }
+  // ================ select elements ======================
+
+  init() {
+    // ================ plugin initialization ======================
+    this.Select = new Select(this.select, this.parameters[this.name]);
+    this.Select.init();
+    // ================ plugin initialization ======================
+
+    // ================ helpers ======================
+    addSelectsPlaceholder.call(this);
+    filterSearch.call(this);
+    // ================ helpers ======================
+  }
+};
+
+// ================ main initialization ======================
+function setSelects() {
+  const selects = [...document.querySelectorAll(".js-select")];
+  if (!selects.length) return;
+
+  // objects to proper destroy and reinit methods
+  const customSelectObject = [];
+  const SelectObjects = [];
+  // objects to proper destroy and reinit methods
+
+  selects.forEach(select => {
+    const customSelect = new CustomSelect(select);
+    customSelect.init();
+    SelectObjects.push(customSelect.Select);
+    customSelectObject.push(customSelect);
   });
-
-  selectEl.addEventListener('change', (e) => {
-    if (e.currentTarget.value !== 'placeholder') {
-      wrap.classList.remove(HAS_PLACEHOLDER);
-    };
-    if (!e.currentTarget.value) {
-      wrap.classList.add(HAS_PLACEHOLDER);
-      opener.innerText = placeholder;
-    };
-  });
-
-
-});
-
-// buttons
-  const btns = {
-    init: document.querySelector('.js-init'),
-    destroy_2: document.querySelector('.js-destroy-2'),
-    destroy: document.querySelector('.js-destroy')
-  };
-
-  const events = Object.keys(btns);
-
-  Object.values(btns).forEach((btn, i) => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (events[i] === 'destroy') {
-        selectObjects[0].destroy();
-          // selectObjects.forEach(select => {
-          //   select.destroy();
-          // });
-        
-      } else if (events[i] === 'destroy_2') {
-        // selectObjects[1].destroy();
-        // selectObjects[2].destroy();
-        // selectObjects[0].destroy();
-      } else if (events[i] === 'init') {        
-        selectObjects.forEach((select) => {
-          select.init();
-        })
-      }
-    });
-  });
-
+}
+setSelects();
+// ================ main initialization ======================

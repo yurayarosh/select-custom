@@ -23,8 +23,10 @@ import Select from 'select-custom';
 
 const selects = [].slice.call(document.querySelectorAll('.js-select'));
 
-selects.forEach(function(el) {
-  const select = new Select(el, { options });
+selects.forEach((el) => {
+  const select = new Select(el, {
+    // some options
+  });
   select.init();
 });
 ```
@@ -101,78 +103,4 @@ select.init();
 Destroy method (for proper using watch example on [Codesandbox](https://codesandbox.io/s/krcji))
 ```js
 select.destroy();
-```
-
-### Example
-
-```js
-const selects = [].slice.call(document.querySelectorAll('.js-select'));
-
-// create input to add in panel
-const panelInput = document.createElement('input');
-panelInput.type = 'text';
-
-// adding colored square in option
-function addOptionItem(option, customOption) {
-  const color = option.dataset.color;
-  if (!color) return;
-  const inner = customOption.innerHTML;
-  customOption.innerHTML = `<span style="background-color: ${color};"></span>` + inner;
-};
-
-const params = {
-  multiple: {
-    multipleSelectOpenerText: true,
-    multipleSelectionOnSingleClick: true
-  },
-  withInput: {
-    panelItem: {
-      item: panelInput,
-      position: 'top',
-      className: 'js-search'
-    }
-  },
-  withInputScnd: {
-    panelItem: {
-      item: '<input type="text" class="js-search"/>',
-      position: 'top'
-    }
-  },
-  default: {
-    optionBuilder: addOptionItem
-  }
-};
-
-selects.forEach((selectEl) => {
-  const selectType = selectEl.dataset.type;
-  const select = new Select(selectEl, params[selectType]);
-  select.init();
-
-  // adding placeholder
-  const wrap = selectEl.parentNode;
-  const opener = wrap.querySelector('.custom-select__opener');  
-
-  const HAS_PLACEHOLDER = 'has-placeholder';
-  let placeholder;
-
-  [].slice.call(selectEl.options).forEach((option) => {
-    if (option.value === 'placeholder') {
-      placeholder = option.innerText;
-      wrap.classList.add(HAS_PLACEHOLDER);
-      if (selectEl.multiple) {
-        opener.innerText = placeholder;
-      };
-    };
-  });
-
-  selectEl.addEventListener('change', (e) => {
-    if (e.currentTarget.value !== 'placeholder') {
-      wrap.classList.remove(HAS_PLACEHOLDER);
-    };
-    if (!e.currentTarget.value) {
-      wrap.classList.add(HAS_PLACEHOLDER);
-      opener.innerText = placeholder;
-    };
-  });
-});
 ```

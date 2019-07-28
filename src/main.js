@@ -220,9 +220,9 @@ export default class Select {
     return result.join(', ');
   };
 
-  setSelectOptionsItems(customOption) {
+  setSelectOptionsItems(customOption, select, opener) {
     const customOptions = [].slice.call(customOption.parentNode.children);
-    const options = [].slice.call(this.select().querySelectorAll('option'));
+    const options = [].slice.call(select.options);
 
     const labels = customOptions.map((option, i) => {
       const label = document.createElement('span');
@@ -242,16 +242,16 @@ export default class Select {
     });
 
     const index = +customOption.getAttribute(this.constants.DATA_LABEL_INDEX);
-    const currentLabel = this.opener().querySelector(`[${this.constants.DATA_LABEL_INDEX}="${index}"]`);
+    const currentLabel = opener.querySelector(`[${this.constants.DATA_LABEL_INDEX}="${index}"]`);
 
     if (customOption.classList.contains(this.constants.IS_SELECTED)) {
-      if (!this.opener().children.length) {
-        this.opener().innerHTML = '';
+      if (!opener.children.length) {
+        opener.innerHTML = '';
       };
-      this.opener().appendChild(labels[index]);
+      opener.appendChild(labels[index]);
     } else {
       if (currentLabel) {
-        this.opener().removeChild(currentLabel);
+        opener.removeChild(currentLabel);
       };      
     };
 
@@ -388,6 +388,8 @@ export default class Select {
         panel.appendChild(optionsWrap);
       };
     } else {
+      const selectedOptions = [];
+
       for (let i = 0; i < options.length; i++) {
         const customOption = document.createElement('div');
         customOption.classList.add(this.constants.option);
@@ -396,10 +398,18 @@ export default class Select {
 
         this.addDataAttributes(options[i], customOption);
 
-        if (options[i].selected) {
-          customOption.classList.add(this.constants.IS_SELECTED);
-          opener.innerHTML = options[i].innerHTML;
+        if (this.el.multiple) {
+          if (options[i].selected) {
+            customOption.classList.add(this.constants.IS_SELECTED);
+            selectedOptions.push(customOption);            
+          };
+        } else {
+          if (options[i].selected) {
+            customOption.classList.add(this.constants.IS_SELECTED);
+            opener.innerHTML = options[i].innerHTML;
+          };
         };
+        
         if (options[i].disabled) {
           customOption.classList.add(this.constants.IS_DISABLED);
         };
@@ -409,6 +419,22 @@ export default class Select {
           optionsWrap.appendChild(customOption);
         } else {
           panel.appendChild(customOption);
+        };
+      };
+
+      if (selectedOptions.length > 0) {
+        const texts = selectedOptions.map(option => {
+          return option.innerText;
+        });
+
+        if (this.options.multipleSelectOpenerText.array) {
+          opener.innerHTML = texts;
+        };
+
+        if (this.options.multipleSelectOpenerText.labels) {
+          selectedOptions.forEach(option => {
+            this.setSelectOptionsItems(option, this.el, opener);
+          });
         };
       };
 
@@ -493,14 +519,14 @@ export default class Select {
           if (this.el.multiple && this.options.multipleSelectOpenerText.array) {
             if (this.getSelectOptionsText(this.el)) {
               this.opener().innerHTML = this.getSelectOptionsText(this.el);
-            };            
+            };
           } else if (this.el.multiple && this.options.multipleSelectOpenerText.labels) {
-            this.setSelectOptionsItems(clickedCustomOption);
+            this.setSelectOptionsItems(clickedCustomOption, this.el, this.opener());
           } else if (this.el.multiple && !this.options.multipleSelectOpenerText) {
             this.opener().innerHTML = this.opener().innerHTML;
           } else {
             this.opener().innerHTML = clickedCustomOption.innerText;
-          };          
+          };
         };
       });
     };
