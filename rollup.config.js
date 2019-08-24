@@ -1,5 +1,6 @@
 import babel from "rollup-plugin-babel";
 import { uglify } from "rollup-plugin-uglify";
+// import browsersync from 'rollup-plugin-browsersync';
 
 export default [
   {
@@ -8,12 +9,11 @@ export default [
       file: 'index.js',
       format: 'cjs'
     },
-    plugins: [ 
+    plugins: [      
       babel({
         exclude: 'node_modules/**' // only transpile our source code
       }),
-      uglify(),
-      
+      uglify(),      
     ]
   },
   {
@@ -23,6 +23,21 @@ export default [
       format: 'cjs'
     },
     plugins: [
+      // browsersync({
+      //   server: {
+      //     baseDir: './',
+      //     directory: false,
+      //     serveStaticOptions: {
+      //       extensions: ['html'],
+      //     },
+      //   },
+      //   port: 8080,
+      //   open: false,
+      //   files: [
+      //     '*.js',
+      //     '*.html',
+      //   ]
+      // }),
       babel({
         exclude: 'node_modules/**' // only transpile our source code
       })

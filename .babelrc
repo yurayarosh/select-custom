@@ -1,10 +1,14 @@
 {
   "presets": [
-    ["latest", {
-      "es2015": {
-        "modules": false
+    ["@babel/preset-env", {
+      "targets": {
+        "browsers": [
+          "last 2 versions",
+          "ie >= 11",
+          "Android > 4",
+          "IOS >= 10"
+        ]
       }
     }]
-  ],
-  "plugins": ["external-helpers"]
+  ]
 }

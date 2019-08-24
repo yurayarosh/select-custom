@@ -1,7 +1,30 @@
-import Select from "./main";
+import  Select  from "./main";
 // import addOptionIcons from "./test-components/addOptionIcons";
 import addSelectsPlaceholder from "./test-components/addSelectsPlaceholder";
 import filterSearch from "./test-components/filterSearch";
+
+// const selects = [].slice.call(document.querySelectorAll(".js-select"));
+
+// const input = document.createElement('input');
+
+// selects.forEach(select => {
+//   const name = select.dataset.type;
+//   const options = {
+//     default: {},
+//     multiple: {
+//       multipleSelectOpenerText: { array: true }
+//     },
+//     with_input: {
+//       panelItem: {
+//         position: "top",
+//         item: input
+//       }
+//     }
+//   };
+
+//   const sel = new Select(select, options[name]);
+//   sel.init();
+// });
 
 class CustomSelect {
   constructor(select) {
@@ -11,7 +34,11 @@ class CustomSelect {
     this.parameters = {
       default: {},
       multiple: {
-        multipleSelectOpenerText: { array: true }
+        multipleSelectOpenerText: { array: true },
+        optionBuilder: (option, customOption) => {
+          const inner = customOption.innerHTML;
+          customOption.innerHTML = `<input type="checkbox" /><span>${inner}</span>`;
+        }
       },
       with_input: {
         panelItem: {

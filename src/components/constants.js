@@ -1,0 +1,22 @@
+export default {
+    wrap: 'custom-select',
+    opener: 'custom-select__opener',
+    panel: 'custom-select__panel',
+    option: 'custom-select__option',
+    optionsWrap: 'custom-select__options',
+    optgroup: 'custom-select__optgroup',
+    panelItemClassName: 'custom-select__panel-item',
+    openerLabel: 'custom-select__opener-label',
+    IS_OPEN: 'is-open',
+    IS_DISABLED: 'is-disabled',
+    IS_MULTIPLE: 'is-multiple',
+    IS_SELECTED: 'is-selected',
+    IS_ABOVE: 'is-above',
+    HAS_CUSTOM_SELECT: 'has-custom-select',
+    HAS_UNUSED_CLOSE_FUNCTION: 'has-unused-close-custom-select-function',
+    DATA_ALLOW_PANEL_CLICK: 'data-allow-panel-click',
+    DATA_LABEL: 'data-label',
+    DATA_VALUE: 'data-value',
+    DATA_HAS_PANEL_ITEM: 'data-has-panel-item',
+    DATA_LABEL_INDEX: 'data-label-index'
+  }  

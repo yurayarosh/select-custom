@@ -1,67 +1,32 @@
 import './polyfill';
-import * as helpFunctions from './helpFunctions';
+import * as helpers from './helpers';
+import constants from './components/constants';
+import defaultParams from './components/defaultParameters';
+import _createElements from './components/_createElements';
+import _open from './components/_open';
+import _close from './components/_close';
+import _change from './components/_change';
+import _trigerCustomEvents from './components/_triggerCustomEvents';
+import _destroy from './components/_destroy';
 
 export default class Select {
   constructor(el, options) {
     this.el = el;
-    this.defaultParams = {
-      optionBuilder: false,
-      panelItem: { position: '', item: '', className: '' },
-      changeOpenerText: true,
-      multipleSelectionOnSingleClick: true,
-      multipleSelectOpenerText: { labels: false, array: false },
-      allowPanelClick: false,
-      openOnHover: false,
-      closeOnMouseleave: false,
-      wrapDataAttributes: false
-    };
-    options = Object.assign({}, this.defaultParams, options);
-    this.options = {
-      optionBuilder: options.optionBuilder,
-      panelItem: options.panelItem,
-      changeOpenerText: options.changeOpenerText,
-      multipleSelectionOnSingleClick: options.multipleSelectionOnSingleClick,
-      multipleSelectOpenerText: options.multipleSelectOpenerText,
-      allowPanelClick: options.allowPanelClick,
-      openOnHover: options.openOnHover,
-      closeOnMouseleave: options.closeOnMouseleave,
-      wrapDataAttributes: options.wrapDataAttributes,
-    };
-    this.constants = {
-      wrap: 'custom-select',
-      opener: 'custom-select__opener',
-      panel: 'custom-select__panel',
-      option: 'custom-select__option',
-      optionsWrap: 'custom-select__options',
-      optgroup: 'custom-select__optgroup',
-      panelItemClassName: 'custom-select__panel-item',
-      openerLabel: 'custom-select__opener-label',
-      IS_OPEN: 'is-open',
-      IS_DISABLED: 'is-disabled',
-      IS_MULTIPLE: 'is-multiple',
-      IS_SELECTED: 'is-selected',
-      IS_ABOVE: 'is-above',
-      HAS_CUSTOM_SELECT: 'has-custom-select',
-      HAS_UNUSED_CLOSE_FUNCTION: 'has-unused-close-custom-select-function',
-      DATA_ALLOW_PANEL_CLICK: 'data-allow-panel-click',
-      DATA_LABEL: 'data-label',
-      DATA_VALUE: 'data-value',
-      DATA_HAS_PANEL_ITEM: 'data-has-panel-item',
-      DATA_LABEL_INDEX: 'data-label-index'
-    };
-    this.isTouch = helpFunctions.detectTouch();
+    this.options = {...defaultParams, ...options};
+    this.constants = constants;
+    this.isTouch = helpers.detectTouch();
   };
 
   init() {
-    this._createElements();
-    this._open();
-    this._close();
-    this._change();
-    this._trigerCustomEvents();
+    _createElements.call(this);
+    _open.call(this);
+    _close.call(this);
+    _change.call(this);
+    _trigerCustomEvents.call(this);
   };
 
   destroy() {
-    this._destroy();
+    _destroy.call(this);
   };
 
   select() {
@@ -79,7 +44,7 @@ export default class Select {
   dispatchEvent(el) {
     const event = document.createEvent('HTMLEvents');
     event.initEvent('change', true, false);
-    this.el.dispatchEvent(event);
+    el.dispatchEvent(event);
   };
 
   addOptionItem(option, customOption) {
@@ -153,22 +118,31 @@ export default class Select {
   };
 
   setSelectedOptionsMultiple({clickedCustomOption, nativeOptionsList, item}) {
-    if (nativeOptionsList[item].selected) {
+    const checkbox = clickedCustomOption.querySelector('input[type="checkbox"]');
+    
+    if (nativeOptionsList[item].selected) {      
       nativeOptionsList[item].selected = false;
       clickedCustomOption.classList.remove(this.constants.IS_SELECTED);
+      if (checkbox) checkbox.checked = false;
     } else {
       nativeOptionsList[item].selected = true;
       clickedCustomOption.classList.add(this.constants.IS_SELECTED);
+      if (checkbox) checkbox.checked = true;
     };
   };
 
   setSelectedOptionsDefault({clickedCustomOption, nativeOptionsList, customOptionsList, item}) {
     for (let i = 0; i < nativeOptionsList.length; i++) {
+      const checkbox = customOptionsList[i].querySelector('input[type="checkbox"]');
+
       nativeOptionsList[i].selected = false;
       customOptionsList[i].classList.remove(this.constants.IS_SELECTED);
+      if (checkbox) checkbox.checked = false;
     };
+    const checkbox = clickedCustomOption.querySelector('input[type="checkbox"]');
     clickedCustomOption.classList.add(this.constants.IS_SELECTED);
     nativeOptionsList[item].selected = true;
+    if (checkbox) checkbox.checked = true;
   };
 
   setSelectedOptions({e, clickedCustomOption ,nativeOptionsList, customOptionsList, item}) {
@@ -198,7 +172,7 @@ export default class Select {
   };
 
   setPanelPosition() {
-    const panelBottom = helpFunctions.offset(this.panel()).top + this.panel().offsetHeight;
+    const panelBottom = helpers.offset(this.panel()).top + this.panel().offsetHeight;
 
     if (panelBottom >= window.innerHeight) {
       this.panel().classList.add(this.constants.IS_ABOVE);
@@ -207,7 +181,7 @@ export default class Select {
     };
   };
 
-  getSelectOptionsText(select) {    
+  getSelectOptionsText(select) {
     const options = [].slice.call(select.options);
     const result = [];
 
@@ -291,267 +265,5 @@ export default class Select {
         targetEl.setAttribute(attribute.name, attribute.value);
       });          
     };
-  };
-
-  _trigerCustomEvents() {
-    const observer = new MutationObserver(mutations => {
-      mutations.forEach(mutation => {
-        if (mutation.target.classList.contains(this.constants.IS_OPEN)) {
-          if (mutation.oldValue.indexOf(this.constants.IS_OPEN) === -1) {
-            if (this.onOpen) {
-              this.onOpen(mutation.target);
-            };
-          };          
-        } else if (mutation.oldValue.indexOf(this.constants.IS_OPEN) > 0) {
-          this.panel().classList.remove(this.constants.IS_ABOVE);
-          if (this.onClose) {
-            this.onClose(mutation.target);
-          };
-        };
-        
-      });
-    });
-    observer.observe(this.select(), { attributes: true, attributeOldValue: true, attributeFilter: ['class'] });
-  };
-
-  _createElements() {
-    const wrap = document.createElement('div');
-    const panel = document.createElement('div');
-    const opener = document.createElement('div');
-    const options = this.el.options;
-    const optgroups = this.el.querySelectorAll('optgroup');
-    let panelItem;
-    let panelItemWrap;
-    let optionsWrap;
-
-    if (this.options.panelItem.item) {
-      panelItemWrap = document.createElement('div');
-      optionsWrap = document.createElement('div');
-      optionsWrap.className = this.constants.optionsWrap;
-      panelItemWrap.className = this.constants.panelItemClassName;
-
-      this.el.setAttribute(this.constants.DATA_HAS_PANEL_ITEM, '');
-      
-      if (typeof this.options.panelItem.item === 'object') {
-        panelItem = this.options.panelItem.item.cloneNode(true);
-        panelItem.className = this.options.panelItem.className ? this.options.panelItem.className : '';
-        panelItemWrap.appendChild(panelItem);
-      };
-      if (typeof this.options.panelItem.item === 'string') {
-        panelItemWrap.innerHTML = this.options.panelItem.item;
-      };      
-    };
-
-    if (panelItemWrap && this.options.panelItem.position === 'top') {
-      panel.appendChild(panelItemWrap);
-    };
-
-    if (optgroups.length > 0) {
-      for (let i = 0; i < optgroups.length; i++) {
-        const title = optgroups[i].label;
-        const optionsInGroup = optgroups[i].querySelectorAll('option');
-        const customOptgroup = document.createElement('div');
-        
-        for (let j = 0; j < optionsInGroup.length; j++) {
-          const customOption = document.createElement('div');
-          customOption.classList.add(this.constants.option);
-          customOption.setAttribute(this.constants.DATA_VALUE, optionsInGroup[j].value);
-          customOption.innerHTML = optionsInGroup[j].innerHTML;
-
-          this.addDataAttributes(optionsInGroup[j], customOption);
-
-          if (optionsInGroup[j].selected) {
-            customOption.classList.add(this.constants.IS_SELECTED);
-            opener.innerHTML = optionsInGroup[j].innerHTML;
-          };
-          if (optionsInGroup[j].disabled) {
-            customOption.classList.add(this.constants.IS_DISABLED);
-          };
-          this.addOptionItem(optionsInGroup[j], customOption);
-          customOptgroup.appendChild(customOption);
-        }; 
-
-        customOptgroup.classList.add(this.constants.optgroup);
-        customOptgroup.setAttribute(this.constants.DATA_LABEL, title);
-
-        this.addDataAttributes(optgroups[i], customOptgroup);
-
-        if (optionsWrap) {
-          optionsWrap.appendChild(customOptgroup);
-          
-        } else {
-          panel.appendChild(customOptgroup);
-        };
-      };
-
-      if (optionsWrap) {
-        panel.appendChild(optionsWrap);
-      };
-    } else {
-      const selectedOptions = [];
-
-      for (let i = 0; i < options.length; i++) {
-        const customOption = document.createElement('div');
-        customOption.classList.add(this.constants.option);
-        customOption.innerHTML = options[i].innerHTML;
-        customOption.setAttribute(this.constants.DATA_VALUE, options[i].value);
-
-        this.addDataAttributes(options[i], customOption);
-
-        if (this.el.multiple) {
-          if (options[i].selected) {
-            customOption.classList.add(this.constants.IS_SELECTED);
-            selectedOptions.push(customOption);            
-          };
-        } else {
-          if (options[i].selected) {
-            customOption.classList.add(this.constants.IS_SELECTED);
-            opener.innerHTML = options[i].innerHTML;
-          };
-        };
-        
-        if (options[i].disabled) {
-          customOption.classList.add(this.constants.IS_DISABLED);
-        };
-        this.addOptionItem(options[i], customOption);
-
-        if (optionsWrap) {
-          optionsWrap.appendChild(customOption);
-        } else {
-          panel.appendChild(customOption);
-        };
-      };
-
-      if (selectedOptions.length > 0) {
-        const texts = selectedOptions.map(option => {
-          return option.innerText;
-        });
-
-        if (this.options.multipleSelectOpenerText.array) {
-          opener.innerHTML = texts;
-        };
-
-        if (this.options.multipleSelectOpenerText.labels) {
-          selectedOptions.forEach(option => {
-            this.setSelectOptionsItems(option, this.el, opener);
-          });
-        };
-      };
-
-      if (optionsWrap) {
-        panel.appendChild(optionsWrap);
-      };
-    };
-
-    if (panelItemWrap && this.options.panelItem.position === 'bottom') {
-      panel.appendChild(panelItemWrap);
-    };
-
-    if (this.options.allowPanelClick) {
-      this.el.setAttribute(this.constants.DATA_ALLOW_PANEL_CLICK, '');
-    };   
-
-    wrap.classList.add(this.constants.wrap);
-    if (this.options.wrapDataAttributes) {
-      this.addDataAttributes(this.el, wrap);
-    };    
-
-    function addWrapClassName(condition, className) {
-      if (condition) {
-        wrap.classList.add(className);
-      };
-    };
-    addWrapClassName(this.el.disabled, this.constants.IS_DISABLED);
-    addWrapClassName(this.el.multiple, this.constants.IS_MULTIPLE);
-    
-    panel.classList.add(this.constants.panel);
-    opener.classList.add(this.constants.opener);
-    helpFunctions.wrap(this.el, wrap);
-    wrap.appendChild(opener);
-    wrap.appendChild(panel);
   };  
-
-  _open() {
-    const openEvent = this.options.openOnHover && !this.isTouch ? 'mouseenter' : 'click';
-    this.openSelectBind = this.openSelect.bind(this);
-
-    this.opener().addEventListener(openEvent, this.openSelectBind);
-  };
-
-  _close() {
-    if (this.options.closeOnMouseleave && !this.isTouch) {
-      this.select().addEventListener('mouseleave', (e) => {
-        document.body.click();
-      });
-    };
-
-    if (document.documentElement.classList.contains(this.constants.HAS_CUSTOM_SELECT)) return;
-
-    this.closeSelectBind = this.closeSelect.bind(this);
-    document.addEventListener('click', this.closeSelectBind);
-    document.documentElement.classList.add(this.constants.HAS_CUSTOM_SELECT);
-
-    this.closeSelectAdded = true;
-  };
-
-  _change() {
-    const options = this.el.options;
-    const customOptions = this.select().querySelectorAll('.'+this.constants.option);
-
-    for (let i = 0; i < customOptions.length; i++) {
-      customOptions[i].addEventListener('click', (e) => {
-        if (this.el.disabled) return;
-        
-        const clickedCustomOption = e.currentTarget;
-        if (clickedCustomOption.classList.contains(this.constants.IS_DISABLED)) return;
-
-        this.setSelectedOptions({
-          e,
-          clickedCustomOption,
-          nativeOptionsList: options,
-          customOptionsList: customOptions,
-          item: i
-        });
-
-        this.dispatchEvent(this.el);
-
-        if (this.options.changeOpenerText) {
-          if (this.el.multiple && this.options.multipleSelectOpenerText.array) {
-            if (this.getSelectOptionsText(this.el)) {
-              this.opener().innerHTML = this.getSelectOptionsText(this.el);
-            };
-          } else if (this.el.multiple && this.options.multipleSelectOpenerText.labels) {
-            this.setSelectOptionsItems(clickedCustomOption, this.el, this.opener());
-          } else if (this.el.multiple && !this.options.multipleSelectOpenerText) {
-            this.opener().innerHTML = this.opener().innerHTML;
-          } else {
-            this.opener().innerHTML = clickedCustomOption.innerText;
-          };
-        };
-      });
-    };
-  };
-
-  _destroy() {
-    if(this.select().classList.contains(this.constants.wrap)) {
-      this.opener().parentNode.removeChild(this.opener());
-      this.panel().parentNode.removeChild(this.panel());
-      helpFunctions.unwrap(this.select());
-      this.el.removeAttribute(this.constants.DATA_HAS_PANEL_ITEM);
-      this.el.removeAttribute(this.constants.DATA_ALLOW_PANEL_CLICK);
-    };    
-
-    const elseSelects = document.querySelectorAll(`.${this.constants.wrap}`);
-
-    if(!elseSelects.length) {      
-      document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
-
-      if (this.closeSelectAdded) {
-        document.removeEventListener('click', this.closeSelectBind);
-        document.documentElement.classList.remove(this.constants.HAS_UNUSED_CLOSE_FUNCTION);
-      } else {
-        document.documentElement.classList.add(this.constants.HAS_UNUSED_CLOSE_FUNCTION);
-      }
-    };
-  };
 };
