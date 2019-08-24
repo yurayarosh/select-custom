@@ -772,12 +772,20 @@ function addSelectsPlaceholder() {
 
   var HAS_PLACEHOLDER = 'has-placeholder';
   var placeholder;
+
+  var selectedOptions = _toConsumableArray(this.select.options).filter(function (option) {
+    if (option.selected && option.value !== 'placeholder') {
+      return option;
+    }
+    return null;
+  });
+
   [].slice.call(this.select.options).forEach(function (option) {
     if (option.value === "placeholder") {
       placeholder = option.innerText;
     }
 
-    if (option.value === "placeholder" && option.selected) {
+    if (option.value === "placeholder" && option.selected && !selectedOptions.length) {
       placeholder = option.innerText;
 
       _this.wrap.classList.add(HAS_PLACEHOLDER);
@@ -788,11 +796,22 @@ function addSelectsPlaceholder() {
     }
   });
   this.select.addEventListener("change", function (e) {
+    var selectedOptions = _toConsumableArray(e.currentTarget.options).filter(function (option) {
+      if (option.selected && option.value !== 'placeholder') {
+        return option;
+      }
+      return null;
+    });
+
+    if (selectedOptions.length > 0) {
+      _this.wrap.classList.remove(HAS_PLACEHOLDER);
+    }
+
     if (e.currentTarget.value !== "placeholder") {
       _this.wrap.classList.remove(HAS_PLACEHOLDER);
     }
 
-    if (!e.currentTarget.value) {
+    if (e.currentTarget.value === 'placeholder' && !selectedOptions.length || !e.currentTarget.value) {
       _this.wrap.classList.add(HAS_PLACEHOLDER);
 
       _this.opener.innerText = placeholder;
@@ -860,7 +879,12 @@ function () {
         },
         optionBuilder: function optionBuilder(option, customOption) {
           var inner = customOption.innerHTML;
-          customOption.innerHTML = "<input type=\"checkbox\" /><span>".concat(inner, "</span>");
+
+          if (customOption.dataset.value === "placeholder") {
+            customOption.innerHTML = inner;
+          } else {
+            customOption.innerHTML = "<input type=\"checkbox\" /> ".concat(inner);
+          }
         }
       },
       with_input: {

@@ -200,7 +200,7 @@ export default class Select {
 
   setSelectOptionsItems(customOption, select, opener) {
     const customOptions = [].slice.call(customOption.parentNode.children);
-    const options = [].slice.call(select.options);
+    const options = [].slice.call(select.options);    
 
     const labels = customOptions.map((option, i) => {
       const label = document.createElement('span');
@@ -209,7 +209,7 @@ export default class Select {
       label.innerHTML = `${option.innerText}<button></button>`;
 
       return label;
-    });
+    });    
 
     customOptions.forEach((option, i) => {
       option.setAttribute(this.constants.DATA_LABEL_INDEX, i);
@@ -225,7 +225,7 @@ export default class Select {
     if (customOption.classList.contains(this.constants.IS_SELECTED)) {
       if (!opener.children.length) {
         opener.innerHTML = '';
-      };
+      };      
       opener.appendChild(labels[index]);
     } else {
       if (currentLabel) {
