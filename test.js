@@ -140,6 +140,16 @@ function wrap(el, wrapper) {
   el.parentNode.insertBefore(wrapper, el);
   wrapper.appendChild(el);
 }
+function unwrap(wrapper) {
+  var docFrag = document.createDocumentFragment();
+
+  while (wrapper.firstChild) {
+    var child = wrapper.removeChild(wrapper.firstChild);
+    docFrag.appendChild(child);
+  }
+
+  wrapper.parentNode.replaceChild(docFrag, wrapper);
+}
 function detectTouch() {
   return 'ontouchstart' in window || navigator.maxTouchPoints;
 }
@@ -445,7 +455,7 @@ function _destroy() {
   if (this.select().classList.contains(this.constants.wrap)) {
     this.opener().parentNode.removeChild(this.opener());
     this.panel().parentNode.removeChild(this.panel());
-    helpers.unwrap(this.select());
+    unwrap(this.select());
     this.el.removeAttribute(this.constants.DATA_HAS_PANEL_ITEM);
     this.el.removeAttribute(this.constants.DATA_ALLOW_PANEL_CLICK);
   }

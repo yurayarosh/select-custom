@@ -1,3 +1,5 @@
+import * as helpers from '../helpers';
+
 export default function _destroy() {
     if(this.select().classList.contains(this.constants.wrap)) {
       this.opener().parentNode.removeChild(this.opener());
