@@ -9,11 +9,11 @@ export default [
       file: 'index.js',
       format: 'cjs'
     },
-    plugins: [      
+    plugins: [
       babel({
         exclude: 'node_modules/**' // only transpile our source code
       }),
-      uglify(),      
+      uglify(),
     ]
   },
   {
@@ -24,17 +24,11 @@ export default [
     },
     plugins: [
       // browsersync({
-      //   server: {
-      //     baseDir: './',
-      //     directory: false,
-      //     serveStaticOptions: {
-      //       extensions: ['html'],
-      //     },
-      //   },
+      //   server: './',
       //   port: 8080,
       //   open: false,
       //   files: [
-      //     '*.js',
+      //     './src/*.js',
       //     '*.html',
       //   ]
       // }),

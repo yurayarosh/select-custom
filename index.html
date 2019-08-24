@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Document</title>
 
   <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  body {
-    padding: 20px;
-    /*padding-top: 90vh;*/
-  }
-  :root {
-    --black: #000;
-    --gray: #ccc;
-    --gray-light: rgba(204, 204, 204, .5);
-    --white: #fff;
-    --fz: 16px;
-   }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      padding: 20px;
+      /*padding-top: 90vh;*/
+    }
+
+    :root {
+      --black: #000;
+      --gray: #ccc;
+      --gray-light: rgba(204, 204, 204, .5);
+      --white: #fff;
+      --fz: 16px;
+    }
+
     .custom-select {
       --padding: 10px;
       --margin: 10px;
@@ -32,19 +36,23 @@
       max-width: var(--width);
       margin-bottom: var(--margin);
     }
+
     .custom-select select {
       visibility: hidden;
       opacity: 0;
       position: absolute;
     }
+
     .custom-select.is-open .custom-select__panel {
       visibility: visible;
       opacity: 1;
     }
+
     .custom-select.has-placeholder .custom-select__opener {
       color: var(--gray-light);
     }
-    .custom-select__panel{
+
+    .custom-select__panel {
       visibility: hidden;
       opacity: 0;
       position: absolute;
@@ -55,39 +63,67 @@
       z-index: 1;
       border: var(--border);
     }
+
     .custom-select__panel.is-above {
       bottom: 100%;
       top: auto;
     }
+
     .custom-select__opener {
       min-height: var(--field-height);
       padding: calc(var(--padding) / 2) var(--padding);
       border: var(--border);
       cursor: pointer;
     }
+
     .custom-select__option {
       padding: calc(var(--padding) / 2) var(--padding);
       cursor: pointer;
     }
+
     .custom-select__option[data-value="placeholder"] {
       display: none;
     }
-    .custom-select__option:hover, .custom-select__option.is-selected {
+
+    .custom-select__option:hover,
+    .custom-select__option.is-selected {
       background-color: var(--gray);
     }
+
     .custom-select__opener-label button {
       display: inline-block;
       width: 10px;
       height: 10px;
     }
+
+    .custom-select__optgroup::before {
+      content: attr(data-label);
+      display: block;
+    }
   </style>
 </head>
+
 <body>
   <select name="" id="" class="js-select" data-type="default" data-select-something="select_something">
     <option value="placeholder">this is placeholder</option>
-    <option value="1" data-option-somethig="option_something">bla1</option>
+    <option selected value="1" data-option-somethig="option_something">bla1</option>
     <option value="2">ba2</option>
     <option value="3">bla3</option>
+  </select>
+
+  <select name="" id="" class="js-select" data-type="default" data-select-something="select_something">
+    <optgroup label="bla-group">
+      <option value="placeholder">this is placeholder</option>
+      <option selected="" value="1" data-option-somethig="option_something">bla1</option>
+      <option value="2">ba2</option>
+      <option value="3">bla3</option>
+    </optgroup>
+    <optgroup label="bla-group-2">
+      <option value="placeholder">this is placeholder</option>
+      <option value="1" data-option-somethig="option_something">bla1</option>
+      <option value="2">ba2</option>
+      <option value="3">bla3</option>
+    </optgroup>
   </select>
 
   <select name="" id="" class="js-select" data-type="with_input">
@@ -108,6 +144,7 @@
   <button class="js-init">init</button>
 
 
-  <script src="test.js"></script>
+  <script src="./test.js"></script>
 </body>
+
 </html>

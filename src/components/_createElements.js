@@ -44,15 +44,19 @@ export default function _createElements() {
         customOption.innerHTML = optionsInGroup[j].innerHTML;
 
         this.addDataAttributes(optionsInGroup[j], customOption);
+        this.addOptionItem(optionsInGroup[j], customOption);
 
         if (optionsInGroup[j].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
           opener.innerHTML = optionsInGroup[j].innerHTML;
+
+          const checkbox = customOption.querySelector('input[type="checkbox"]');
+          if (checkbox) checkbox.checked = true;
         };
         if (optionsInGroup[j].disabled) {
           customOption.classList.add(this.constants.IS_DISABLED);
         };
-        this.addOptionItem(optionsInGroup[j], customOption);
+        
         customOptgroup.appendChild(customOption);
       }; 
 
@@ -82,23 +86,27 @@ export default function _createElements() {
       customOption.setAttribute(this.constants.DATA_VALUE, options[i].value);
 
       this.addDataAttributes(options[i], customOption);
+      this.addOptionItem(options[i], customOption);
+      const checkbox = customOption.querySelector('input[type="checkbox"]');
 
       if (this.el.multiple) {
         if (options[i].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
-          selectedOptions.push(customOption);            
+          selectedOptions.push(customOption);
+          if(checkbox) checkbox.checked = true;
         };
       } else {
         if (options[i].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
           opener.innerHTML = options[i].innerHTML;
+          if(checkbox) checkbox.checked = true;
         };
       };
       
       if (options[i].disabled) {
         customOption.classList.add(this.constants.IS_DISABLED);
       };
-      this.addOptionItem(options[i], customOption);
+      
 
       if (optionsWrap) {
         optionsWrap.appendChild(customOption);

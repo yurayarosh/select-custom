@@ -32,9 +32,14 @@ class CustomSelect {
     this.name = select.dataset.type;
     // ================ plugin options ======================
     this.parameters = {
-      default: {},
+      default: {
+        optionBuilder: (option, customOption) => {
+          const inner = customOption.innerHTML;
+          customOption.innerHTML = `<input type="checkbox" /><span>${inner}</span>`;
+        }
+      },
       multiple: {
-        multipleSelectOpenerText: { array: true },
+        multipleSelectOpenerText: { labels: true },
         optionBuilder: (option, customOption) => {
           const inner = customOption.innerHTML;
           customOption.innerHTML = `<input type="checkbox" /><span>${inner}</span>`;

@@ -230,16 +230,18 @@ function _createElements() {
         customOption.setAttribute(this.constants.DATA_VALUE, optionsInGroup[j].value);
         customOption.innerHTML = optionsInGroup[j].innerHTML;
         this.addDataAttributes(optionsInGroup[j], customOption);
+        this.addOptionItem(optionsInGroup[j], customOption);
 
         if (optionsInGroup[j].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
           opener.innerHTML = optionsInGroup[j].innerHTML;
+          var checkbox = customOption.querySelector('input[type="checkbox"]');
+          if (checkbox) checkbox.checked = true;
         }
 
         if (optionsInGroup[j].disabled) {
           customOption.classList.add(this.constants.IS_DISABLED);
         }
-        this.addOptionItem(optionsInGroup[j], customOption);
         customOptgroup.appendChild(customOption);
       }
       customOptgroup.classList.add(this.constants.optgroup);
@@ -269,25 +271,29 @@ function _createElements() {
       _customOption.setAttribute(this.constants.DATA_VALUE, options[_i].value);
 
       this.addDataAttributes(options[_i], _customOption);
+      this.addOptionItem(options[_i], _customOption);
+
+      var _checkbox = _customOption.querySelector('input[type="checkbox"]');
 
       if (this.el.multiple) {
         if (options[_i].selected) {
           _customOption.classList.add(this.constants.IS_SELECTED);
 
           selectedOptions.push(_customOption);
+          if (_checkbox) _checkbox.checked = true;
         }
       } else {
         if (options[_i].selected) {
           _customOption.classList.add(this.constants.IS_SELECTED);
 
           opener.innerHTML = options[_i].innerHTML;
+          if (_checkbox) _checkbox.checked = true;
         }
       }
 
       if (options[_i].disabled) {
         _customOption.classList.add(this.constants.IS_DISABLED);
       }
-      this.addOptionItem(options[_i], _customOption);
 
       if (optionsWrap) {
         optionsWrap.appendChild(_customOption);
@@ -384,6 +390,8 @@ function _change() {
       });
 
       _this.dispatchEvent(_this.el);
+
+      _this.triggerCheckbox(clickedCustomOption);
 
       if (_this.options.changeOpenerText) {
         if (_this.el.multiple && _this.options.multipleSelectOpenerText.array) {
@@ -508,6 +516,14 @@ function () {
       el.dispatchEvent(event);
     }
   }, {
+    key: "triggerCheckbox",
+    value: function triggerCheckbox(customOption) {
+      var checkbox = customOption.querySelector('input[type="checkbox"]');
+      var condition = customOption.classList.contains(this.constants.IS_SELECTED);
+      if (checkbox && condition) checkbox.checked = true;
+      if (checkbox && !condition) checkbox.checked = false;
+    }
+  }, {
     key: "addOptionItem",
     value: function addOptionItem(option, customOption) {
       if (this.options.optionBuilder) {
@@ -583,16 +599,13 @@ function () {
       var clickedCustomOption = _ref.clickedCustomOption,
           nativeOptionsList = _ref.nativeOptionsList,
           item = _ref.item;
-      var checkbox = clickedCustomOption.querySelector('input[type="checkbox"]');
 
       if (nativeOptionsList[item].selected) {
         nativeOptionsList[item].selected = false;
         clickedCustomOption.classList.remove(this.constants.IS_SELECTED);
-        if (checkbox) checkbox.checked = false;
       } else {
         nativeOptionsList[item].selected = true;
         clickedCustomOption.classList.add(this.constants.IS_SELECTED);
-        if (checkbox) checkbox.checked = true;
       }
     }
   }, {
@@ -712,6 +725,10 @@ function () {
         var label = e.currentTarget.parentNode;
         var name = label.getAttribute(this.constants.DATA_LABEL_INDEX);
         var targetOptions = [].slice.call(this.select().querySelectorAll("[".concat(this.constants.DATA_LABEL_INDEX, "=\"").concat(name, "\"]")));
+        var targetCustomOptionArr = targetOptions.filter(function (el) {
+          if (el.classList.contains(_this2.constants.option)) return el;
+        });
+        var targetCustomOption = targetCustomOptionArr[0];
         targetOptions.forEach(function (option) {
           if (option.selected) {
             option.selected = false;
@@ -722,6 +739,7 @@ function () {
           }
         });
         this.dispatchEvent(this.el);
+        this.triggerCheckbox(targetCustomOption);
 
         if (label.parentNode) {
           label.parentNode.removeChild(label);
@@ -830,10 +848,15 @@ function () {
     this.name = select.dataset.type; // ================ plugin options ======================
 
     this.parameters = {
-      default: {},
+      default: {
+        optionBuilder: function optionBuilder(option, customOption) {
+          var inner = customOption.innerHTML;
+          customOption.innerHTML = "<input type=\"checkbox\" /><span>".concat(inner, "</span>");
+        }
+      },
       multiple: {
         multipleSelectOpenerText: {
-          array: true
+          labels: true
         },
         optionBuilder: function optionBuilder(option, customOption) {
           var inner = customOption.innerHTML;

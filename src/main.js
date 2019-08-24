@@ -47,6 +47,14 @@ export default class Select {
     el.dispatchEvent(event);
   };
 
+  triggerCheckbox(customOption) {
+    const checkbox = customOption.querySelector('input[type="checkbox"]');
+    const condition = customOption.classList.contains(this.constants.IS_SELECTED);
+
+    if (checkbox && condition) checkbox.checked = true;
+    if(checkbox && !condition) checkbox.checked = false;
+  };
+
   addOptionItem(option, customOption) {
     if (this.options.optionBuilder) {
       this.options.optionBuilder(option, customOption);
@@ -118,16 +126,12 @@ export default class Select {
   };
 
   setSelectedOptionsMultiple({clickedCustomOption, nativeOptionsList, item}) {
-    const checkbox = clickedCustomOption.querySelector('input[type="checkbox"]');
-    
     if (nativeOptionsList[item].selected) {      
       nativeOptionsList[item].selected = false;
       clickedCustomOption.classList.remove(this.constants.IS_SELECTED);
-      if (checkbox) checkbox.checked = false;
     } else {
       nativeOptionsList[item].selected = true;
       clickedCustomOption.classList.add(this.constants.IS_SELECTED);
-      if (checkbox) checkbox.checked = true;
     };
   };
 
@@ -234,6 +238,11 @@ export default class Select {
       const label = e.currentTarget.parentNode;
       const name = label.getAttribute(this.constants.DATA_LABEL_INDEX);
       const targetOptions = [].slice.call(this.select().querySelectorAll(`[${this.constants.DATA_LABEL_INDEX}="${name}"]`));
+      const targetCustomOptionArr = targetOptions.filter(el => {
+        if(el.classList.contains(this.constants.option)) return el;
+      });
+      const targetCustomOption = targetCustomOptionArr[0];
+
 
       targetOptions.forEach((option) => {
         if (option.selected) {
@@ -245,6 +254,8 @@ export default class Select {
       });
 
       this.dispatchEvent(this.el);
+      
+      this.triggerCheckbox(targetCustomOption);
       if (label.parentNode) {
         label.parentNode.removeChild(label);
       };            

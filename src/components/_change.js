@@ -18,6 +18,7 @@ export default function _change() {
       });
 
       this.dispatchEvent(this.el);
+      this.triggerCheckbox(clickedCustomOption);
       
       if (this.options.changeOpenerText) {
         if (this.el.multiple && this.options.multipleSelectOpenerText.array) {
