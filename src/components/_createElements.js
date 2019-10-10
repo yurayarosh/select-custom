@@ -4,11 +4,18 @@ export default function _createElements() {
   const wrap = document.createElement('div');
   const panel = document.createElement('div');
   const opener = document.createElement('div');
+  
   const options = this.el.options;
   const optgroups = this.el.querySelectorAll('optgroup');
   let panelItem;
   let panelItemWrap;
   let optionsWrap;
+  let openerLabel;
+
+  if (this.options.openerLabel) {
+    openerLabel = document.createElement('span');
+    openerLabel.className = this.constants.openerLabel;
+  } 
 
   if (this.options.panelItem.item) {
     panelItemWrap = document.createElement('div');
@@ -48,7 +55,11 @@ export default function _createElements() {
 
         if (optionsInGroup[j].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
-          opener.innerHTML = optionsInGroup[j].innerHTML;
+          if (openerLabel) {
+            openerLabel.innerHTML = optionsInGroup[j].innerHTML;
+          } else {
+            opener.innerHTML = optionsInGroup[j].innerHTML;
+          }          
 
           const checkbox = customOption.querySelector('input[type="checkbox"]');
           if (checkbox) checkbox.checked = true;
@@ -93,12 +104,23 @@ export default function _createElements() {
         if (options[i].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
           selectedOptions.push(customOption);
+          if (openerLabel) {
+            openerLabel.innerHTML = options[i].innerHTML;
+          } else {
+            opener.innerHTML = options[i].innerHTML;
+          } 
+
           if(checkbox) checkbox.checked = true;
         };
       } else {
         if (options[i].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
-          opener.innerHTML = options[i].innerHTML;
+          if (openerLabel) {
+            openerLabel.innerHTML = options[i].innerHTML;
+          } else {
+            opener.innerHTML = options[i].innerHTML;
+          } 
+          
           if(checkbox) checkbox.checked = true;
         };
       };
@@ -121,11 +143,23 @@ export default function _createElements() {
       });
 
       if (this.options.multipleSelectOpenerText.array) {
-        opener.innerHTML = texts;
+        if (openerLabel) {
+          openerLabel.innerHTML = texts;
+        } else {
+          opener.innerHTML = texts;
+        }        
       };
 
       if (this.options.multipleSelectOpenerText.labels) {
-        selectedOptions.forEach(option => {
+        if(this.options.openerLabel) {
+          console.warn(
+            'You set `multipleSelectOpenerText: { labels: true }` and `openerLabel: true` options to this select',
+            this.el,
+            "It doesn't work that way. You should change one of the options."
+          );
+        }
+        
+        selectedOptions.forEach(option => {          
           this.setSelectOptionsItems(option, this.el, opener);
         });
       };
@@ -159,6 +193,9 @@ export default function _createElements() {
   
   panel.classList.add(this.constants.panel);
   opener.classList.add(this.constants.opener);
+  if (openerLabel) {
+    opener.appendChild(openerLabel);
+  }
   helpers.wrap(this.el, wrap);
   wrap.appendChild(opener);
   wrap.appendChild(panel);

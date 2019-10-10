@@ -36,10 +36,12 @@ class CustomSelect {
         optionBuilder: (option, customOption) => {
           const inner = customOption.innerHTML;
           customOption.innerHTML = `<input type="checkbox" /><span>${inner}</span>`;
-        }
+        },
+        openerLabel: true
       },
       multiple: {
         multipleSelectOpenerText: { labels: true },
+        // openerLabel: true,
         optionBuilder: (option, customOption) => {
           const inner = customOption.innerHTML;
           if (customOption.dataset.value === "placeholder") {

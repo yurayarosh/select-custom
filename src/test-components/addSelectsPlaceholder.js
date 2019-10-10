@@ -1,7 +1,9 @@
 export default function addSelectsPlaceholder() {
   const HAS_PLACEHOLDER = 'has-placeholder';
-
   let placeholder;
+  const opener = this.opener.children[0] || this.opener;
+  
+
   const selectedOptions = [...this.select.options].filter(option => {
     if (option.selected && option.value !== 'placeholder') {
       return option;
@@ -18,7 +20,7 @@ export default function addSelectsPlaceholder() {
       placeholder = option.innerText;
       this.wrap.classList.add(HAS_PLACEHOLDER);
       if (this.select.multiple) {
-        this.opener.innerText = placeholder;
+        opener.innerText = placeholder;
       }
     }
   });
@@ -41,7 +43,7 @@ export default function addSelectsPlaceholder() {
     if (e.currentTarget.value === 'placeholder' && !selectedOptions.length
       || !e.currentTarget.value) {
       this.wrap.classList.add(HAS_PLACEHOLDER);
-      this.opener.innerText = placeholder;
+      opener.innerText = placeholder;      
     }
   });
 }

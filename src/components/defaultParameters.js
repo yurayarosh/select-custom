@@ -1,5 +1,5 @@
 export default {
-  optionBuilder: false,
+  optionBuilder: undefined,
   panelItem: { position: '', item: '', className: '' },
   changeOpenerText: true,
   multipleSelectionOnSingleClick: true,
@@ -7,5 +7,6 @@ export default {
   allowPanelClick: false,
   openOnHover: false,
   closeOnMouseleave: false,
-  wrapDataAttributes: false
+  wrapDataAttributes: false,
+  openerLabel: false,
 };

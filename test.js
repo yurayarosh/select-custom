@@ -178,7 +178,7 @@ var constants = {
 };
 
 var defaultParams = {
-  optionBuilder: false,
+  optionBuilder: undefined,
   panelItem: {
     position: '',
     item: '',
@@ -193,7 +193,8 @@ var defaultParams = {
   allowPanelClick: false,
   openOnHover: false,
   closeOnMouseleave: false,
-  wrapDataAttributes: false
+  wrapDataAttributes: false,
+  openerLabel: false
 };
 
 function _createElements() {
@@ -207,6 +208,12 @@ function _createElements() {
   var panelItem;
   var panelItemWrap;
   var optionsWrap;
+  var openerLabel;
+
+  if (this.options.openerLabel) {
+    openerLabel = document.createElement('span');
+    openerLabel.className = this.constants.openerLabel;
+  }
 
   if (this.options.panelItem.item) {
     panelItemWrap = document.createElement('div');
@@ -244,7 +251,13 @@ function _createElements() {
 
         if (optionsInGroup[j].selected) {
           customOption.classList.add(this.constants.IS_SELECTED);
-          opener.innerHTML = optionsInGroup[j].innerHTML;
+
+          if (openerLabel) {
+            openerLabel.innerHTML = optionsInGroup[j].innerHTML;
+          } else {
+            opener.innerHTML = optionsInGroup[j].innerHTML;
+          }
+
           var checkbox = customOption.querySelector('input[type="checkbox"]');
           if (checkbox) checkbox.checked = true;
         }
@@ -290,13 +303,25 @@ function _createElements() {
           _customOption.classList.add(this.constants.IS_SELECTED);
 
           selectedOptions.push(_customOption);
+
+          if (openerLabel) {
+            openerLabel.innerHTML = options[_i].innerHTML;
+          } else {
+            opener.innerHTML = options[_i].innerHTML;
+          }
+
           if (_checkbox) _checkbox.checked = true;
         }
       } else {
         if (options[_i].selected) {
           _customOption.classList.add(this.constants.IS_SELECTED);
 
-          opener.innerHTML = options[_i].innerHTML;
+          if (openerLabel) {
+            openerLabel.innerHTML = options[_i].innerHTML;
+          } else {
+            opener.innerHTML = options[_i].innerHTML;
+          }
+
           if (_checkbox) _checkbox.checked = true;
         }
       }
@@ -318,10 +343,18 @@ function _createElements() {
       });
 
       if (this.options.multipleSelectOpenerText.array) {
-        opener.innerHTML = texts;
+        if (openerLabel) {
+          openerLabel.innerHTML = texts;
+        } else {
+          opener.innerHTML = texts;
+        }
       }
 
       if (this.options.multipleSelectOpenerText.labels) {
+        if (this.options.openerLabel) {
+          console.warn('You set `multipleSelectOpenerText: { labels: true }` and `openerLabel: true` options to this select', this.el, "It doesn't work that way. You should change one of the options.");
+        }
+
         selectedOptions.forEach(function (option) {
           _this.setSelectOptionsItems(option, _this.el, opener);
         });
@@ -355,6 +388,11 @@ function _createElements() {
   addWrapClassName(this.el.multiple, this.constants.IS_MULTIPLE);
   panel.classList.add(this.constants.panel);
   opener.classList.add(this.constants.opener);
+
+  if (openerLabel) {
+    opener.appendChild(openerLabel);
+  }
+
   wrap(this.el, wrap$1);
   wrap$1.appendChild(opener);
   wrap$1.appendChild(panel);
@@ -390,6 +428,7 @@ function _change() {
       if (_this.el.disabled) return;
       var clickedCustomOption = e.currentTarget;
       if (clickedCustomOption.classList.contains(_this.constants.IS_DISABLED)) return;
+      var opener = _this.options.openerLabel ? _this.opener().children[0] : _this.opener();
 
       _this.setSelectedOptions({
         e: e,
@@ -406,14 +445,14 @@ function _change() {
       if (_this.options.changeOpenerText) {
         if (_this.el.multiple && _this.options.multipleSelectOpenerText.array) {
           if (_this.getSelectOptionsText(_this.el)) {
-            _this.opener().innerHTML = _this.getSelectOptionsText(_this.el);
+            opener.innerHTML = _this.getSelectOptionsText(_this.el);
           }
         } else if (_this.el.multiple && _this.options.multipleSelectOpenerText.labels) {
           _this.setSelectOptionsItems(clickedCustomOption, _this.el, _this.opener());
         } else if (_this.el.multiple && !_this.options.multipleSelectOpenerText) {
-          _this.opener().innerHTML = _this.opener().innerHTML;
+          opener.innerHTML = opener.innerHTML;
         } else {
-          _this.opener().innerHTML = clickedCustomOption.innerText;
+          opener.innerHTML = clickedCustomOption.innerText;
         }
       }
     });
@@ -782,6 +821,7 @@ function addSelectsPlaceholder() {
 
   var HAS_PLACEHOLDER = 'has-placeholder';
   var placeholder;
+  var opener = this.opener.children[0] || this.opener;
 
   var selectedOptions = _toConsumableArray(this.select.options).filter(function (option) {
     if (option.selected && option.value !== 'placeholder') {
@@ -801,7 +841,7 @@ function addSelectsPlaceholder() {
       _this.wrap.classList.add(HAS_PLACEHOLDER);
 
       if (_this.select.multiple) {
-        _this.opener.innerText = placeholder;
+        opener.innerText = placeholder;
       }
     }
   });
@@ -824,7 +864,7 @@ function addSelectsPlaceholder() {
     if (e.currentTarget.value === 'placeholder' && !selectedOptions.length || !e.currentTarget.value) {
       _this.wrap.classList.add(HAS_PLACEHOLDER);
 
-      _this.opener.innerText = placeholder;
+      opener.innerText = placeholder;
     }
   });
 }
@@ -881,12 +921,14 @@ function () {
         optionBuilder: function optionBuilder(option, customOption) {
           var inner = customOption.innerHTML;
           customOption.innerHTML = "<input type=\"checkbox\" /><span>".concat(inner, "</span>");
-        }
+        },
+        openerLabel: true
       },
       multiple: {
         multipleSelectOpenerText: {
           labels: true
         },
+        // openerLabel: true,
         optionBuilder: function optionBuilder(option, customOption) {
           var inner = customOption.innerHTML;
 

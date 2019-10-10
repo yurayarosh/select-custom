@@ -7,7 +7,7 @@
 ### Install
 
 ```html
-npm i select-custom -D
+npm i select-custom
 ```
 
 ```html
@@ -21,7 +21,7 @@ npm i select-custom -D
 ```js
 import Select from 'select-custom';
 
-const selects = [].slice.call(document.querySelectorAll('.js-select'));
+const selects = [...document.querySelectorAll('.js-select')];
 
 selects.forEach((el) => {
   const select = new Select(el, {
@@ -36,37 +36,40 @@ selects.forEach((el) => {
 Standart options
 ```js
 {
-  optionBuilder: false,
-  panelItem: false,
+  optionBuilder: undefined,
+  panelItem: { position: '', item: '', className: '' },
   changeOpenerText: true,
   multipleSelectionOnSingleClick: true,
   multipleSelectOpenerText: { labels: false, array: false },
   allowPanelClick: false,
   openOnHover: false,
   closeOnMouseleave: false,
-  wrapDataAttributes: false
+  wrapDataAttributes: false,
+  openerLabel: false,
 }
 ```
 
-`optionBuilder` - function with arguments `option, customOption` allows add elements to custom option.
+`optionBuilder` - `function`  arguments `option, customOption` allows add elements to custom option.
 
-`panelItem` - options: `{ item: element or string, position: 'top', className: '' }`, `{ item: element or string, position: 'bottom', className: '' }`- add element in custom panel above or under options.
+`panelItem` - `object` options: `{ item: element or string, position: 'top', className: '' }`, `{ item: element or string, position: 'bottom', className: '' }`- add element in custom panel above or under options.
 
-`changeOpenerText` - if `false` - text in opener panel won't change.
+`changeOpenerText` - `boolean` if `false` - text in opener panel won't change.
 
 If native select has attribute `multiple` - select allows multiple selection.
 
-`multipleSelectionOnSingleClick` - if `true` - allows multiple selection witout CTRL button.
+`multipleSelectionOnSingleClick` - `boolean` if `true` - allows multiple selection witout CTRL button.
 
 `multipleSelectOpenerText` - if `{ array: true }` - in opener pannel will be added array with selected options text, if `{ labels: true }` - in opener pannel will be added span elements with button and option text.
 
-`allowPanelClick` - if `true` - option panel won't close on selection.
+`allowPanelClick` - `boolean` if `true` - option panel won't close on selection.
 
-`openOnHover` - if `true` - allows open on hover.
+`openOnHover` - `boolean` if `true` - allows open on hover.
 
-`closeOnMouseleave` - if `true` - allows close on mouseleave.
+`closeOnMouseleave` - `boolean` if `true` - allows close on mouseleave.
 
-`wrapDataAttributes` - if `true` - data attributes from native `select` element will be added to custom wrap.
+`wrapDataAttributes` - `boolean` if `true` - data attributes from native `select` element will be added to custom wrap.
+
+`openerLabel` - `boolean` add span inner to custom opener.
 
 Supports standart attributs `multiple`, `disabled`, `disabled` for `option`.
 
