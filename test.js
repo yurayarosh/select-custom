@@ -213,7 +213,7 @@ function offset(el) {
     left: rect.left + document.body.scrollLeft
   };
 }
-function wrap(el, wrapper) {
+function wrapElements(el, wrapper) {
   el.parentNode.insertBefore(wrapper, el);
   wrapper.appendChild(el);
 }
@@ -277,7 +277,7 @@ var defaultParams = {
 function _createElements() {
   var _this = this;
 
-  var wrap$1 = document.createElement('div');
+  var wrap = document.createElement('div');
   var panel = document.createElement('div');
   var opener = document.createElement('div');
   var options = this.el.options;
@@ -450,15 +450,15 @@ function _createElements() {
   if (this.options.allowPanelClick) {
     this.el.setAttribute(this.constants.DATA_ALLOW_PANEL_CLICK, '');
   }
-  wrap$1.classList.add(this.constants.wrap);
+  wrap.classList.add(this.constants.wrap);
 
   if (this.options.wrapDataAttributes) {
-    this.addDataAttributes(this.el, wrap$1);
+    this.addDataAttributes(this.el, wrap);
   }
 
   function addWrapClassName(condition, className) {
     if (condition) {
-      wrap$1.classList.add(className);
+      wrap.classList.add(className);
     }
   }
   addWrapClassName(this.el.disabled, this.constants.IS_DISABLED);
@@ -470,28 +470,29 @@ function _createElements() {
     opener.appendChild(openerLabel);
   }
 
-  wrap(this.el, wrap$1);
-  wrap$1.appendChild(opener);
-  wrap$1.appendChild(panel);
+  wrapElements(this.el, wrap);
+  wrap.appendChild(opener);
+  wrap.appendChild(panel);
 }
 
 function _open() {
-  var openEvent = this.options.openOnHover && !this.isTouch ? 'mouseenter' : 'click';
+  var openEvent = this.options.openOnHover && !detectTouch() ? 'mouseenter' : 'click';
   this.openSelectBind = this.openSelect.bind(this);
   this.opener.addEventListener(openEvent, this.openSelectBind);
 }
 
 function _close() {
-  if (this.options.closeOnMouseleave && !this.isTouch) {
-    this.select.addEventListener('mouseleave', function (e) {
+  if (this.options.closeOnMouseleave && !detectTouch()) {
+    this.select.addEventListener('mouseleave', function () {
       document.body.click();
     });
   }
   if (document.documentElement.classList.contains(this.constants.HAS_CUSTOM_SELECT)) return;
   this.closeSelectBind = this.closeSelect.bind(this);
   document.addEventListener('click', this.closeSelectBind);
+  document.addEventListener('keydown', this.closeSelectBind);
   document.documentElement.classList.add(this.constants.HAS_CUSTOM_SELECT);
-  this.closeSelectAdded = true;
+  this.closeSelectListenersAdded = true;
 }
 
 function _change() {
@@ -568,6 +569,12 @@ function _trigerCustomEvents() {
 }
 
 function _destroy() {
+  var selects = document.querySelectorAll(".".concat(this.constants.wrap));
+
+  if (!selects.length && !document.documentElement.classList.contains(this.constants.HAS_UNUSED_CLOSE_FUNCTION)) {
+    return;
+  }
+
   if (this.select.classList.contains(this.constants.wrap)) {
     this.opener.parentNode.removeChild(this.opener);
     this.panel.parentNode.removeChild(this.panel);
@@ -580,9 +587,11 @@ function _destroy() {
   if (!elseSelects.length) {
     document.documentElement.classList.remove(this.constants.HAS_CUSTOM_SELECT);
 
-    if (this.closeSelectAdded) {
+    if (this.closeSelectListenersAdded) {
       document.removeEventListener('click', this.closeSelectBind);
+      document.removeEventListener('keydown', this.closeSelectBind);
       document.documentElement.classList.remove(this.constants.HAS_UNUSED_CLOSE_FUNCTION);
+      this.closeSelectListenersAdded = false;
     } else {
       document.documentElement.classList.add(this.constants.HAS_UNUSED_CLOSE_FUNCTION);
     }
@@ -598,7 +607,6 @@ function () {
     this.el = el;
     this.options = _objectSpread2({}, defaultParams, {}, options);
     this.constants = constants;
-    this.isTouch = detectTouch();
   }
 
   _createClass(Select, [{
@@ -661,8 +669,9 @@ function () {
     key: "closeSelect",
     value: function closeSelect(e) {
       if (document.documentElement.classList.contains(this.constants.HAS_UNUSED_CLOSE_FUNCTION)) {
-        console.warn('You have unused `closeSelect` function, triggering on document click. You shoud remove it, by using `destroy()` method to the first select element.');
+        console.warn('You have unused `closeSelect` function, triggering on document click and `Esc` button. You shoud remove it, by using `destroy()` method to the first select element.');
       }
+      if (e.type && e.type === 'keydown' && e.keyCode && e.keyCode !== 27) return;
 
       if (!document.documentElement.classList.contains(this.constants.HAS_CUSTOM_SELECT)) {
         return;

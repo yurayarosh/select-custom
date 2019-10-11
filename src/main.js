@@ -1,5 +1,5 @@
 import './polyfill';
-import * as helpers from './helpers';
+import { offset } from './helpers';
 import constants from './components/constants';
 import defaultParams from './components/defaultParameters';
 import _createElements from './components/_createElements';
@@ -14,7 +14,6 @@ export default class Select {
     this.el = el;
     this.options = {...defaultParams, ...options};
     this.constants = constants;
-    this.isTouch = helpers.detectTouch();
   };
 
   init() {
@@ -80,8 +79,11 @@ export default class Select {
 
   closeSelect(e) {
     if(document.documentElement.classList.contains(this.constants.HAS_UNUSED_CLOSE_FUNCTION)) {
-      console.warn('You have unused `closeSelect` function, triggering on document click. You shoud remove it, by using `destroy()` method to the first select element.');
+      console.warn('You have unused `closeSelect` function, triggering on document click and `Esc` button. You shoud remove it, by using `destroy()` method to the first select element.');
     };
+
+    if(e.type && e.type === 'keydown' && e.keyCode && e.keyCode !== 27) return;
+
     if (!document.documentElement.classList.contains(this.constants.HAS_CUSTOM_SELECT)) {
       return;
     };
@@ -91,7 +93,7 @@ export default class Select {
     };
 
     const allOpenSelects = document.querySelectorAll('.'+this.constants.wrap+'.'+this.constants.IS_OPEN);
-    if (!allOpenSelects.length) return;   
+    if (!allOpenSelects.length) return;
 
     function checkTarget(e, className) {
       if (e.target.classList && e.target.classList.contains(className) || e.target.closest('.'+className)) {
@@ -176,7 +178,7 @@ export default class Select {
   };
 
   setPanelPosition() {
-    const panelBottom = helpers.offset(this.panel).top + this.panel.offsetHeight;
+    const panelBottom = offset(this.panel).top + this.panel.offsetHeight;
 
     if (panelBottom >= window.innerHeight) {
       this.panel.classList.add(this.constants.IS_ABOVE);

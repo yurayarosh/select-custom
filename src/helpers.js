@@ -1,20 +1,20 @@
 export function offset(el) {
-  let rect = el.getBoundingClientRect();
+  const rect = el.getBoundingClientRect();
   return {
     top: rect.top + document.body.scrollTop,
     left: rect.left + document.body.scrollLeft
   };
 };
 
-export function wrap(el, wrapper) {
+export function wrapElements(el, wrapper) {
   el.parentNode.insertBefore(wrapper, el);
   wrapper.appendChild(el);
 };
 
 export function unwrap(wrapper) {
-  let docFrag = document.createDocumentFragment();
+  const docFrag = document.createDocumentFragment();
   while (wrapper.firstChild) {
-    let child = wrapper.removeChild(wrapper.firstChild);
+    const child = wrapper.removeChild(wrapper.firstChild);
     docFrag.appendChild(child);
   }
 

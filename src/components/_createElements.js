@@ -1,4 +1,4 @@
-import * as helpers from '../helpers';
+import { wrapElements }  from '../helpers';
 
 export default function _createElements() {
   const wrap = document.createElement('div');
@@ -196,7 +196,7 @@ export default function _createElements() {
   if (openerLabel) {
     opener.appendChild(openerLabel);
   }
-  helpers.wrap(this.el, wrap);
+  wrapElements(this.el, wrap);
   wrap.appendChild(opener);
   wrap.appendChild(panel);
 }; 
