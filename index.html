@@ -104,44 +104,63 @@
 </head>
 
 <body>
-  <select name="" id="" class="js-select" data-type="default" data-select-something="select_something">
-    <option value="placeholder">this is placeholder</option>
-    <option selected value="1" data-option-somethig="option_something">bla1</option>
-    <option value="2">ba2</option>
-    <option value="3">bla3</option>
-  </select>
+  <div class="select">
+      <label class="select__title">Default select</label>
+      <select data-type="default" class="js-select">
+        <optgroup label="group-1">
+          <option value="placeholder">This is placeholder</option>
+          <option selected value="1">option - 1</option>
+          <option value="2">option - 2</option>
+          <option value="3">option - 3</option>
+        </optgroup>
+        <optgroup label="group-2">
+          <option value="4">option - 4</option>
+          <option value="5">option - 5</option>
+        </optgroup>
+      </select>
+    </div>
 
-  <select name="" id="" class="js-select" data-type="default" data-select-something="select_something">
-    <optgroup label="bla-group">
-      <option value="placeholder">this is placeholder</option>
-      <option selected="" value="1" data-option-somethig="option_something">bla1</option>
-      <option value="2">ba2</option>
-      <option value="3">bla3</option>
-    </optgroup>
-    <optgroup label="bla-group-2">
-      <option value="placeholder">this is placeholder</option>
-      <option value="1" data-option-somethig="option_something">bla1</option>
-      <option value="2">ba2</option>
-      <option value="3">bla3</option>
-    </optgroup>
-  </select>
+    <div class="select">
+      <label class="select__title">Select with input</label>
+      <select data-type="with_input" class="js-select">
+        <option value="placeholder">This is placeholder</option>
+        <option value="1">option - 1</option>
+        <option value="2">option - 2</option>
+        <option value="3">option - 3</option>
+        <option value="4">option - 4</option>
+        <option value="5">option - 5</option>
+      </select>
+    </div>
 
-  <select name="" id="" class="js-select" data-type="with_input">
-    <option value="1">bla1</option>
-    <option value="2" selected="">ba2</option>
-    <option value="3">bla3</option>
-  </select>
+    <div class="select">
+      <label class="select__title">Multiple select</label>
+      <select data-type="multiple" multiple class="js-select">
+        <option value="placeholder">This is placeholder</option>
+        <option value="1">option - 1</option>
+        <option value="2">option - 2</option>
+        <option value="3">option - 3</option>
+        <option value="4">option - 4</option>
+        <option value="5">option - 5</option>
+      </select>
+    </div>
 
-  <select name="" id="" class="js-select" multiple="" data-type="multiple">
-    <option value="placeholder">this is placeholder</option>
-    <option value="1" >bla1</option>
-    <option selected value="2" >ba2</option>
-    <option selected value="3">bla3</option>
-  </select>
+    <div class="select">
+      <label class="select__title">Select with custom option element</label>
+      <select data-type="whith_icons" class="js-select">
+        <option value="placeholder" data-color="#000"
+          >This is placeholder</option
+        >
+        <option value="1" data-color="red">option - 1</option>
+        <option value="2" data-color="orange">option - 2</option>
+        <option value="3" data-color="lightblue">option - 3</option>
+        <option value="4" data-color="indigo">option - 4</option>
+        <option value="5" data-color="gray">option - 5</option>
+      </select>
+    </div>
 
-  <button class="js-destroy">destroy</button>
-  <button class="js-destroy-2">destroy-2</button>
-  <button class="js-init">init</button>
+    <button class="js-destroy-first">destroy first</button>
+    <button class="js-destroy-all">destroy all</button>
+    <button class="js-init-all">init all</button>
 
 
   <script src="./test.js"></script>

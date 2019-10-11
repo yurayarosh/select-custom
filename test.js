@@ -71,6 +71,83 @@ function _objectSpread2(target) {
   return target;
 }
 
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+
+  subClass.prototype = Object.create(superClass && superClass.prototype, {
+    constructor: {
+      value: subClass,
+      writable: true,
+      configurable: true
+    }
+  });
+  if (superClass) _setPrototypeOf(subClass, superClass);
+}
+
+function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+    return o.__proto__ || Object.getPrototypeOf(o);
+  };
+  return _getPrototypeOf(o);
+}
+
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (typeof call === "object" || typeof call === "function")) {
+    return call;
+  }
+
+  return _assertThisInitialized(self);
+}
+
+function _superPropBase(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf(object);
+    if (object === null) break;
+  }
+
+  return object;
+}
+
+function _get(target, property, receiver) {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get = Reflect.get;
+  } else {
+    _get = function _get(target, property, receiver) {
+      var base = _superPropBase(target, property);
+
+      if (!base) return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+
+      if (desc.get) {
+        return desc.get.call(receiver);
+      }
+
+      return desc.value;
+    };
+  }
+
+  return _get(target, property, receiver || target);
+}
+
 function _toConsumableArray(arr) {
   return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
 }
@@ -337,6 +414,10 @@ function _createElements() {
       }
     }
 
+    if (this.options.multipleSelectOpenerText.labels && this.options.openerLabel) {
+      console.warn('You set `multipleSelectOpenerText: { labels: true }` and `openerLabel: true` options to this select', this.el, "It doesn't work that way. You should change one of the options.");
+    }
+
     if (selectedOptions.length > 0) {
       var texts = selectedOptions.map(function (option) {
         return option.innerText;
@@ -351,10 +432,6 @@ function _createElements() {
       }
 
       if (this.options.multipleSelectOpenerText.labels) {
-        if (this.options.openerLabel) {
-          console.warn('You set `multipleSelectOpenerText: { labels: true }` and `openerLabel: true` options to this select', this.el, "It doesn't work that way. You should change one of the options.");
-        }
-
         selectedOptions.forEach(function (option) {
           _this.setSelectOptionsItems(option, _this.el, opener);
         });
@@ -401,12 +478,12 @@ function _createElements() {
 function _open() {
   var openEvent = this.options.openOnHover && !this.isTouch ? 'mouseenter' : 'click';
   this.openSelectBind = this.openSelect.bind(this);
-  this.opener().addEventListener(openEvent, this.openSelectBind);
+  this.opener.addEventListener(openEvent, this.openSelectBind);
 }
 
 function _close() {
   if (this.options.closeOnMouseleave && !this.isTouch) {
-    this.select().addEventListener('mouseleave', function (e) {
+    this.select.addEventListener('mouseleave', function (e) {
       document.body.click();
     });
   }
@@ -421,14 +498,14 @@ function _change() {
   var _this = this;
 
   var options = this.el.options;
-  var customOptions = this.select().querySelectorAll('.' + this.constants.option);
+  var customOptions = this.select.querySelectorAll('.' + this.constants.option);
 
   var _loop = function _loop(i) {
     customOptions[i].addEventListener('click', function (e) {
       if (_this.el.disabled) return;
       var clickedCustomOption = e.currentTarget;
       if (clickedCustomOption.classList.contains(_this.constants.IS_DISABLED)) return;
-      var opener = _this.options.openerLabel ? _this.opener().children[0] : _this.opener();
+      var opener = _this.options.openerLabel ? _this.opener.children[0] : _this.opener;
 
       _this.setSelectedOptions({
         e: e,
@@ -448,7 +525,7 @@ function _change() {
             opener.innerHTML = _this.getSelectOptionsText(_this.el);
           }
         } else if (_this.el.multiple && _this.options.multipleSelectOpenerText.labels) {
-          _this.setSelectOptionsItems(clickedCustomOption, _this.el, _this.opener());
+          _this.setSelectOptionsItems(clickedCustomOption, _this.el, _this.opener);
         } else if (_this.el.multiple && !_this.options.multipleSelectOpenerText) {
           opener.innerHTML = opener.innerHTML;
         } else {
@@ -475,7 +552,7 @@ function _trigerCustomEvents() {
           }
         }
       } else if (mutation.oldValue.indexOf(_this.constants.IS_OPEN) > 0) {
-        _this.panel().classList.remove(_this.constants.IS_ABOVE);
+        _this.panel.classList.remove(_this.constants.IS_ABOVE);
 
         if (_this.onClose) {
           _this.onClose(mutation.target);
@@ -483,7 +560,7 @@ function _trigerCustomEvents() {
       }
     });
   });
-  observer.observe(this.select(), {
+  observer.observe(this.select, {
     attributes: true,
     attributeOldValue: true,
     attributeFilter: ['class']
@@ -491,10 +568,10 @@ function _trigerCustomEvents() {
 }
 
 function _destroy() {
-  if (this.select().classList.contains(this.constants.wrap)) {
-    this.opener().parentNode.removeChild(this.opener());
-    this.panel().parentNode.removeChild(this.panel());
-    unwrap(this.select());
+  if (this.select.classList.contains(this.constants.wrap)) {
+    this.opener.parentNode.removeChild(this.opener);
+    this.panel.parentNode.removeChild(this.panel);
+    unwrap(this.select);
     this.el.removeAttribute(this.constants.DATA_HAS_PANEL_ITEM);
     this.el.removeAttribute(this.constants.DATA_ALLOW_PANEL_CLICK);
   }
@@ -543,21 +620,6 @@ function () {
       _destroy.call(this);
     }
   }, {
-    key: "select",
-    value: function select() {
-      return this.el.parentNode;
-    }
-  }, {
-    key: "opener",
-    value: function opener() {
-      return this.select().querySelector('.' + this.constants.opener);
-    }
-  }, {
-    key: "panel",
-    value: function panel() {
-      return this.select().querySelector('.' + this.constants.panel);
-    }
-  }, {
     key: "dispatchEvent",
     value: function dispatchEvent(el) {
       var event = document.createEvent('HTMLEvents');
@@ -588,7 +650,7 @@ function () {
         return;
       }
       var allOpenSelects = document.querySelectorAll('.' + this.constants.wrap + '.' + this.constants.IS_OPEN);
-      this.select().classList.toggle(this.constants.IS_OPEN);
+      this.select.classList.toggle(this.constants.IS_OPEN);
 
       for (var i = 0; i < allOpenSelects.length; i++) {
         allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
@@ -713,12 +775,12 @@ function () {
   }, {
     key: "setPanelPosition",
     value: function setPanelPosition() {
-      var panelBottom = offset(this.panel()).top + this.panel().offsetHeight;
+      var panelBottom = offset(this.panel).top + this.panel.offsetHeight;
 
       if (panelBottom >= window.innerHeight) {
-        this.panel().classList.add(this.constants.IS_ABOVE);
+        this.panel.classList.add(this.constants.IS_ABOVE);
       } else {
-        this.panel().classList.remove(this.constants.IS_ABOVE);
+        this.panel.classList.remove(this.constants.IS_ABOVE);
       }
     }
   }, {
@@ -773,7 +835,7 @@ function () {
         e.preventDefault();
         var label = e.currentTarget.parentNode;
         var name = label.getAttribute(this.constants.DATA_LABEL_INDEX);
-        var targetOptions = [].slice.call(this.select().querySelectorAll("[".concat(this.constants.DATA_LABEL_INDEX, "=\"").concat(name, "\"]")));
+        var targetOptions = [].slice.call(this.select.querySelectorAll("[".concat(this.constants.DATA_LABEL_INDEX, "=\"").concat(name, "\"]")));
         var targetCustomOptionArr = targetOptions.filter(function (el) {
           if (el.classList.contains(_this2.constants.option)) return el;
         });
@@ -811,10 +873,32 @@ function () {
         });
       }
     }
+  }, {
+    key: "select",
+    get: function get() {
+      return this.el.parentNode;
+    }
+  }, {
+    key: "opener",
+    get: function get() {
+      return this.select.querySelector('.' + this.constants.opener);
+    }
+  }, {
+    key: "panel",
+    get: function get() {
+      return this.select.querySelector('.' + this.constants.panel);
+    }
   }]);
 
   return Select;
 }();
+
+function addOptionIcons(option, customOption) {
+  var color = option.dataset.color;
+  if (!color) return;
+  var inner = customOption.innerHTML;
+  customOption.innerHTML = "<div class=\"custom-select__option-icon\" style=\"background-color: ".concat(color, ";\"></div> ").concat(inner);
+}
 
 function addSelectsPlaceholder() {
   var _this = this;
@@ -823,29 +907,30 @@ function addSelectsPlaceholder() {
   var placeholder;
   var opener = this.opener.children[0] || this.opener;
 
-  var selectedOptions = _toConsumableArray(this.select.options).filter(function (option) {
+  var selectedOptions = _toConsumableArray(this.el.options).filter(function (option) {
     if (option.selected && option.value !== 'placeholder') {
       return option;
     }
     return null;
   });
 
-  [].slice.call(this.select.options).forEach(function (option) {
-    if (option.value === "placeholder") {
+  _toConsumableArray(this.el.options).forEach(function (option) {
+    if (option.value === 'placeholder') {
       placeholder = option.innerText;
     }
 
-    if (option.value === "placeholder" && option.selected && !selectedOptions.length) {
+    if (option.value === 'placeholder' && !selectedOptions.length) {
       placeholder = option.innerText;
 
-      _this.wrap.classList.add(HAS_PLACEHOLDER);
+      _this.select.classList.add(HAS_PLACEHOLDER);
 
-      if (_this.select.multiple) {
+      if (_this.el.multiple) {
         opener.innerText = placeholder;
       }
     }
   });
-  this.select.addEventListener("change", function (e) {
+
+  this.el.addEventListener("change", function (e) {
     var selectedOptions = _toConsumableArray(e.currentTarget.options).filter(function (option) {
       if (option.selected && option.value !== 'placeholder') {
         return option;
@@ -854,15 +939,15 @@ function addSelectsPlaceholder() {
     });
 
     if (selectedOptions.length > 0) {
-      _this.wrap.classList.remove(HAS_PLACEHOLDER);
+      _this.select.classList.remove(HAS_PLACEHOLDER);
     }
 
-    if (e.currentTarget.value !== "placeholder") {
-      _this.wrap.classList.remove(HAS_PLACEHOLDER);
+    if (e.currentTarget.value !== 'placeholder') {
+      _this.select.classList.remove(HAS_PLACEHOLDER);
     }
 
     if (e.currentTarget.value === 'placeholder' && !selectedOptions.length || !e.currentTarget.value) {
-      _this.wrap.classList.add(HAS_PLACEHOLDER);
+      _this.select.classList.add(HAS_PLACEHOLDER);
 
       opener.innerText = placeholder;
     }
@@ -876,7 +961,7 @@ function filterSearch() {
   this.input.addEventListener("input", function (e) {
     var filter = e.currentTarget.value.toUpperCase();
 
-    _this.options.forEach(function (option) {
+    _this.panelOptions.forEach(function (option) {
       var textValue = option.innerText;
 
       if (textValue.toUpperCase().indexOf(filter) > -1) {
@@ -888,118 +973,105 @@ function filterSearch() {
   });
 }
 
-// const input = document.createElement('input');
-// selects.forEach(select => {
-//   const name = select.dataset.type;
-//   const options = {
-//     default: {},
-//     multiple: {
-//       multipleSelectOpenerText: { array: true }
-//     },
-//     with_input: {
-//       panelItem: {
-//         position: "top",
-//         item: input
-//       }
-//     }
-//   };
-//   const sel = new Select(select, options[name]);
-//   sel.init();
-// });
-
 var CustomSelect =
 /*#__PURE__*/
-function () {
-  function CustomSelect(select) {
+function (_Select) {
+  _inherits(CustomSelect, _Select);
+
+  function CustomSelect(select, params) {
+    var _this;
+
     _classCallCheck(this, CustomSelect);
 
-    this.select = select;
-    this.name = select.dataset.type; // ================ plugin options ======================
-
-    this.parameters = {
-      default: {
-        optionBuilder: function optionBuilder(option, customOption) {
-          var inner = customOption.innerHTML;
-          customOption.innerHTML = "<input type=\"checkbox\" /><span>".concat(inner, "</span>");
-        },
-        openerLabel: true
-      },
-      multiple: {
-        multipleSelectOpenerText: {
-          labels: true
-        },
-        // openerLabel: true,
-        optionBuilder: function optionBuilder(option, customOption) {
-          var inner = customOption.innerHTML;
-
-          if (customOption.dataset.value === "placeholder") {
-            customOption.innerHTML = inner;
-          } else {
-            customOption.innerHTML = "<input type=\"checkbox\" /> ".concat(inner);
-          }
-        }
-      },
-      with_input: {
-        panelItem: {
-          position: "top",
-          item: '<input type="text" class="js-search" placeholder="This is search input" />'
-        }
-      }
-    }; // ================ plugin options ======================
-  } // ================ select elements ======================
-
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(CustomSelect).call(this, select, params));
+    _this.name = select.dataset.type;
+    return _this;
+  }
 
   _createClass(CustomSelect, [{
+    key: "getElements",
+    value: function getElements() {
+      this.panelOptions = _toConsumableArray(this.select.querySelectorAll('.custom-select__option'));
+      this.input = this.select.querySelector('.js-search');
+    }
+  }, {
     key: "init",
-    // ================ select elements ======================
     value: function init() {
-      // ================ plugin initialization ======================
-      this.Select = new Select(this.select, this.parameters[this.name]);
-      this.Select.init(); // ================ plugin initialization ======================
-      // ================ helpers ======================
+      if (this.select.classList && this.select.classList.contains('custom-select')) {
+        return;
+      }
 
+      _get(_getPrototypeOf(CustomSelect.prototype), "init", this).call(this); // ================ custom function ======================
+
+
+      this.getElements();
       addSelectsPlaceholder.call(this);
-      filterSearch.call(this); // ================ helpers ======================
-    }
-  }, {
-    key: "wrap",
-    get: function get() {
-      return this.select.parentNode;
-    }
-  }, {
-    key: "opener",
-    get: function get() {
-      return this.wrap.querySelector(".custom-select__opener");
-    }
-  }, {
-    key: "panel",
-    get: function get() {
-      return this.wrap.querySelector(".custom-select__panel");
-    }
-  }, {
-    key: "options",
-    get: function get() {
-      return _toConsumableArray(this.wrap.querySelectorAll(".custom-select__option"));
-    }
-  }, {
-    key: "input",
-    get: function get() {
-      return this.wrap.querySelector(".js-search");
+      filterSearch.call(this); // ================ custom function ======================
     }
   }]);
 
   return CustomSelect;
-}();
+}(Select);
 
 function setSelects() {
-  var selects = _toConsumableArray(document.querySelectorAll(".js-select"));
+  var selects = _toConsumableArray(document.querySelectorAll('.js-select'));
 
-  if (!selects.length) return; // objects to proper destroy and reinit methods
+  if (!selects.length) return;
+  var customSelectObject = [];
+  var params = {
+    default: {},
+    multiple: {
+      multipleSelectOpenerText: {
+        labels: true
+      },
+      optionBuilder: function optionBuilder(option, customOption) {
+        var inner = customOption.innerHTML;
 
+        if (customOption.dataset.value === 'placeholder') {
+          customOption.innerHTML = inner;
+        } else {
+          customOption.innerHTML = "<input type=\"checkbox\" /> ".concat(inner);
+        }
+      }
+    },
+    with_input: {
+      panelItem: {
+        position: 'top',
+        item: '<input type="text" class="js-search" placeholder="This is search input" />'
+      }
+    },
+    whith_icons: {
+      optionBuilder: addOptionIcons
+    }
+  };
   selects.forEach(function (select) {
-    var customSelect = new CustomSelect(select);
+    var name = select.dataset.type;
+    var customSelect = new CustomSelect(select, params[name]);
     customSelect.init();
+    customSelectObject.push(customSelect);
+  }); // ================ example of destroy and reinit methods ======================
+
+  var destroyFirst = document.querySelector('.js-destroy-first');
+  var destroyAll = document.querySelector('.js-destroy-all');
+  var initAll = document.querySelector('.js-init-all');
+  destroyFirst.addEventListener('click', function (e) {
+    e.preventDefault();
+    customSelectObject[0].destroy();
+  });
+  destroyAll.addEventListener('click', function (e) {
+    e.preventDefault();
+    customSelectObject.forEach(function (select) {
+      select.destroy();
+    }); // to remove close function, triggering on document click
+
+    customSelectObject[0].destroy();
+  });
+  initAll.addEventListener('click', function (e) {
+    e.preventDefault();
+    customSelectObject.forEach(function (customSelect) {
+      customSelect.init();
+    });
   });
 }
 
-setSelects(); // ================ main initialization ======================
+setSelects();

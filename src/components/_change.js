@@ -1,6 +1,6 @@
 export default function _change() {
   const options = this.el.options;
-  const customOptions = this.select().querySelectorAll('.'+this.constants.option);  
+  const customOptions = this.select.querySelectorAll('.'+this.constants.option);  
 
   for (let i = 0; i < customOptions.length; i++) {
     customOptions[i].addEventListener('click', (e) => {
@@ -9,7 +9,7 @@ export default function _change() {
       const clickedCustomOption = e.currentTarget;
       if (clickedCustomOption.classList.contains(this.constants.IS_DISABLED)) return;
 
-      const opener = this.options.openerLabel ? this.opener().children[0] : this.opener()
+      const opener = this.options.openerLabel ? this.opener.children[0] : this.opener
 
       this.setSelectedOptions({
         e,
@@ -28,7 +28,7 @@ export default function _change() {
             opener.innerHTML = this.getSelectOptionsText(this.el);
           };
         } else if (this.el.multiple && this.options.multipleSelectOpenerText.labels) {
-          this.setSelectOptionsItems(clickedCustomOption, this.el, this.opener());
+          this.setSelectOptionsItems(clickedCustomOption, this.el, this.opener);
         } else if (this.el.multiple && !this.options.multipleSelectOpenerText) {
           opener.innerHTML = opener.innerHTML;
         } else {

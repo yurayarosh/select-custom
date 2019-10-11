@@ -137,6 +137,14 @@ export default function _createElements() {
       };
     };
 
+    if(this.options.multipleSelectOpenerText.labels && this.options.openerLabel) {
+      console.warn(
+        'You set `multipleSelectOpenerText: { labels: true }` and `openerLabel: true` options to this select',
+        this.el,
+        "It doesn't work that way. You should change one of the options."
+      );
+    }
+
     if (selectedOptions.length > 0) {
       const texts = selectedOptions.map(option => {
         return option.innerText;
@@ -151,20 +159,12 @@ export default function _createElements() {
       };
 
       if (this.options.multipleSelectOpenerText.labels) {
-        if(this.options.openerLabel) {
-          console.warn(
-            'You set `multipleSelectOpenerText: { labels: true }` and `openerLabel: true` options to this select',
-            this.el,
-            "It doesn't work that way. You should change one of the options."
-          );
-        }
-        
         selectedOptions.forEach(option => {          
           this.setSelectOptionsItems(option, this.el, opener);
         });
       };
     };
-
+    
     if (optionsWrap) {
       panel.appendChild(optionsWrap);
     };

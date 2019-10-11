@@ -1,114 +1,100 @@
-import  Select  from "./main";
-// import addOptionIcons from "./test-components/addOptionIcons";
-import addSelectsPlaceholder from "./test-components/addSelectsPlaceholder";
-import filterSearch from "./test-components/filterSearch";
+import  Select  from './main';
+import addOptionIcons from './test-components/addOptionIcons';
+import addSelectsPlaceholder from './test-components/addSelectsPlaceholder';
+import filterSearch from './test-components/filterSearch';
 
-// const selects = [].slice.call(document.querySelectorAll(".js-select"));
-
-// const input = document.createElement('input');
-
-// selects.forEach(select => {
-//   const name = select.dataset.type;
-//   const options = {
-//     default: {},
-//     multiple: {
-//       multipleSelectOpenerText: { array: true }
-//     },
-//     with_input: {
-//       panelItem: {
-//         position: "top",
-//         item: input
-//       }
-//     }
-//   };
-
-//   const sel = new Select(select, options[name]);
-//   sel.init();
-// });
-
-class CustomSelect {
-  constructor(select) {
-    this.select = select;
+class CustomSelect extends Select {
+  constructor(select, params) {
+    super(select, params);
     this.name = select.dataset.type;
-    // ================ plugin options ======================
-    this.parameters = {
-      default: {
-        optionBuilder: (option, customOption) => {
-          const inner = customOption.innerHTML;
-          customOption.innerHTML = `<input type="checkbox" /><span>${inner}</span>`;
-        },
-        openerLabel: true
-      },
-      multiple: {
-        multipleSelectOpenerText: { labels: true },
-        // openerLabel: true,
-        optionBuilder: (option, customOption) => {
-          const inner = customOption.innerHTML;
-          if (customOption.dataset.value === "placeholder") {
-            customOption.innerHTML = inner;
-          } else {
-            customOption.innerHTML = `<input type="checkbox" /> ${inner}`;
-          }
-        }
-      },
-      with_input: {
-        panelItem: {
-          position: "top",
-          item:
-            '<input type="text" class="js-search" placeholder="This is search input" />'
-        }
-      }
-    };
-    // ================ plugin options ======================
   }
 
-  // ================ select elements ======================
-  get wrap() {
-    return this.select.parentNode;
+  getElements() {
+    this.panelOptions = [
+      ...this.select.querySelectorAll('.custom-select__option')
+    ];
+    this.input = this.select.querySelector('.js-search');
   }
-  get opener() {
-    return this.wrap.querySelector(".custom-select__opener");
-  }
-  get panel() {
-    return this.wrap.querySelector(".custom-select__panel");
-  }
-  get options() {
-    return [...this.wrap.querySelectorAll(".custom-select__option")];
-  }
-  get input() {
-    return this.wrap.querySelector(".js-search");
-  }
-  // ================ select elements ======================
 
   init() {
-    // ================ plugin initialization ======================
-    this.Select = new Select(this.select, this.parameters[this.name]);
-    this.Select.init();
-    // ================ plugin initialization ======================
+    if (
+      this.select.classList &&
+      this.select.classList.contains('custom-select')
+    ) {
+      return;
+    }
+    super.init();
 
-    // ================ helpers ======================
+    // ================ custom function ======================
+    this.getElements();
     addSelectsPlaceholder.call(this);
     filterSearch.call(this);
-    // ================ helpers ======================
+    // ================ custom function ======================
   }
-};
+}
 
-// ================ main initialization ======================
 function setSelects() {
-  const selects = [...document.querySelectorAll(".js-select")];
+  const selects = [...document.querySelectorAll('.js-select')];
   if (!selects.length) return;
 
-  // objects to proper destroy and reinit methods
   const customSelectObject = [];
-  const SelectObjects = [];
-  // objects to proper destroy and reinit methods
+
+  const params = {
+    default: {},
+    multiple: {
+      multipleSelectOpenerText: { labels: true },
+      optionBuilder: (option, customOption) => {
+        const inner = customOption.innerHTML;
+        if (customOption.dataset.value === 'placeholder') {
+          customOption.innerHTML = inner;
+        } else {
+          customOption.innerHTML = `<input type="checkbox" /> ${inner}`;
+        }
+      }
+    },
+    with_input: {
+      panelItem: {
+        position: 'top',
+        item:
+          '<input type="text" class="js-search" placeholder="This is search input" />'
+      }
+    },
+    whith_icons: {
+      optionBuilder: addOptionIcons
+    }
+  };
 
   selects.forEach(select => {
-    const customSelect = new CustomSelect(select);
+    const name = select.dataset.type;
+    const customSelect = new CustomSelect(select, params[name]);
     customSelect.init();
-    SelectObjects.push(customSelect.Select);
     customSelectObject.push(customSelect);
+  });
+
+  // ================ example of destroy and reinit methods ======================
+  const destroyFirst = document.querySelector('.js-destroy-first');
+  const destroyAll = document.querySelector('.js-destroy-all');
+  const initAll = document.querySelector('.js-init-all');
+
+  destroyFirst.addEventListener('click', e => {
+    e.preventDefault();
+    customSelectObject[0].destroy();
+  });
+
+  destroyAll.addEventListener('click', e => {
+    e.preventDefault();
+    customSelectObject.forEach(select => {
+      select.destroy();
+    });
+    // to remove close function, triggering on document click
+    customSelectObject[0].destroy();
+  });
+
+  initAll.addEventListener('click', e => {
+    e.preventDefault();
+    customSelectObject.forEach(customSelect => {
+      customSelect.init();
+    });
   });
 }
 setSelects();
-// ================ main initialization ======================

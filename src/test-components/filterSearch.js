@@ -3,7 +3,7 @@ export default function filterSearch() {
 
   this.input.addEventListener("input", e => {
     const filter = e.currentTarget.value.toUpperCase();
-    this.options.forEach(option => {
+    this.panelOptions.forEach(option => {
       const textValue = option.innerText;
       if (textValue.toUpperCase().indexOf(filter) > -1) {
         option.style.display = "";

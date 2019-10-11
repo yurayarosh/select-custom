@@ -1,10 +1,10 @@
 import * as helpers from '../helpers';
 
 export default function _destroy() {
-    if(this.select().classList.contains(this.constants.wrap)) {
-      this.opener().parentNode.removeChild(this.opener());
-      this.panel().parentNode.removeChild(this.panel());
-      helpers.unwrap(this.select());
+    if(this.select.classList.contains(this.constants.wrap)) {
+      this.opener.parentNode.removeChild(this.opener);
+      this.panel.parentNode.removeChild(this.panel);
+      helpers.unwrap(this.select);
       this.el.removeAttribute(this.constants.DATA_HAS_PANEL_ITEM);
       this.el.removeAttribute(this.constants.DATA_ALLOW_PANEL_CLICK);
     };    

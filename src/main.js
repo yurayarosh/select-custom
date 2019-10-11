@@ -29,16 +29,16 @@ export default class Select {
     _destroy.call(this);
   };
 
-  select() {
+  get select() {
     return this.el.parentNode;
   };
 
-  opener() {
-    return this.select().querySelector('.'+this.constants.opener);
+  get opener() {
+    return this.select.querySelector('.'+this.constants.opener);
   };
 
-  panel() {
-    return this.select().querySelector('.'+this.constants.panel);
+  get panel() {
+    return this.select.querySelector('.'+this.constants.panel);
   };
 
   dispatchEvent(el) {
@@ -70,7 +70,7 @@ export default class Select {
 
     const allOpenSelects = document.querySelectorAll('.'+this.constants.wrap+'.'+this.constants.IS_OPEN);
 
-    this.select().classList.toggle(this.constants.IS_OPEN);
+    this.select.classList.toggle(this.constants.IS_OPEN);
     for (let i = 0; i < allOpenSelects.length; i++) {
       allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
     };
@@ -176,12 +176,12 @@ export default class Select {
   };
 
   setPanelPosition() {
-    const panelBottom = helpers.offset(this.panel()).top + this.panel().offsetHeight;
+    const panelBottom = helpers.offset(this.panel).top + this.panel.offsetHeight;
 
     if (panelBottom >= window.innerHeight) {
-      this.panel().classList.add(this.constants.IS_ABOVE);
+      this.panel.classList.add(this.constants.IS_ABOVE);
     } else {
-      this.panel().classList.remove(this.constants.IS_ABOVE);
+      this.panel.classList.remove(this.constants.IS_ABOVE);
     };
   };
 
@@ -237,7 +237,7 @@ export default class Select {
       e.preventDefault();
       const label = e.currentTarget.parentNode;
       const name = label.getAttribute(this.constants.DATA_LABEL_INDEX);
-      const targetOptions = [].slice.call(this.select().querySelectorAll(`[${this.constants.DATA_LABEL_INDEX}="${name}"]`));
+      const targetOptions = [].slice.call(this.select.querySelectorAll(`[${this.constants.DATA_LABEL_INDEX}="${name}"]`));
       const targetCustomOptionArr = targetOptions.filter(el => {
         if(el.classList.contains(this.constants.option)) return el;
       });

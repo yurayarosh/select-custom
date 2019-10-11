@@ -8,7 +8,7 @@ export default function _trigerCustomEvents() {
             };
           };          
         } else if (mutation.oldValue.indexOf(this.constants.IS_OPEN) > 0) {
-          this.panel().classList.remove(this.constants.IS_ABOVE);
+          this.panel.classList.remove(this.constants.IS_ABOVE);
           if (this.onClose) {
             this.onClose(mutation.target);
           };
@@ -16,5 +16,5 @@ export default function _trigerCustomEvents() {
         
       });
     });
-    observer.observe(this.select(), { attributes: true, attributeOldValue: true, attributeFilter: ['class'] });
+    observer.observe(this.select, { attributes: true, attributeOldValue: true, attributeFilter: ['class'] });
   };

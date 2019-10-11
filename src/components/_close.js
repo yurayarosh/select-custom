@@ -1,6 +1,6 @@
 export default function _close() {
   if (this.options.closeOnMouseleave && !this.isTouch) {
-    this.select().addEventListener('mouseleave', (e) => {
+    this.select.addEventListener('mouseleave', (e) => {
       document.body.click();
     });
   };
