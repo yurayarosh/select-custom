@@ -82,7 +82,7 @@ export default class Select {
       console.warn('You have unused `closeSelect` function, triggering on document click and `Esc` button. You shoud remove it, by using `destroy()` method to the first select element.');
     };
 
-    if(e.type && e.type === 'keydown' && e.keyCode && e.keyCode !== 27) return;
+    if(e.type && e.type === 'keydown' && e.keyCode && e.keyCode !== 27) return;    
 
     if (!document.documentElement.classList.contains(this.constants.HAS_CUSTOM_SELECT)) {
       return;
@@ -95,36 +95,31 @@ export default class Select {
     const allOpenSelects = document.querySelectorAll('.'+this.constants.wrap+'.'+this.constants.IS_OPEN);
     if (!allOpenSelects.length) return;
 
-    function checkTarget(e, className) {
-      if (e.target.classList && e.target.classList.contains(className) || e.target.closest('.'+className)) {
-        return true;
-      };
-    };    
 
-    if (e.target.closest('.'+this.constants.IS_DISABLED)) return;
+    if (e.type && e.type === 'click' && e.target.closest('.'+this.constants.IS_DISABLED)) return;
 
-    if (e.target.hasAttribute(this.constants.DATA_LABEL)) return;
+    if (e.type && e.type === 'click' && e.target.hasAttribute(this.constants.DATA_LABEL)) return;
     
-    if (e.target.closest('.'+this.constants.wrap)) {
+    if (e.type && e.type === 'click' && e.target.closest('.'+this.constants.wrap)) {
       const elem = e.target.closest('.'+this.constants.wrap).querySelector('select');
      
       if (elem.multiple) {
-        if(checkTarget(e, this.constants.panel)) return;
+        if (e.type && e.type === 'click' && e.target.closest('.'+this.constants.panel)) return;
       };
 
       if (elem.hasAttribute(this.constants.DATA_ALLOW_PANEL_CLICK)) {
-        if (checkTarget(e, this.constants.panel)) return;
+        if (e.type && e.type === 'click' && e.target.closest('.'+this.constants.panel)) return;
       };
 
       if (elem.hasAttribute(this.constants.DATA_HAS_PANEL_ITEM)) {
-        if (checkTarget(e, this.constants.panelItemClassName)) return;
+        if (e.type && e.type === 'click' && e.target.closest('.'+this.constants.panelItemClassName)) return;
       };       
     };
     if (e.target.className.indexOf(this.constants.opener) === -1) {
       for (let i = 0; i < allOpenSelects.length; i++) {
         allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
       };
-    };    
+    };
   };
 
   setSelectedOptionsMultiple({clickedCustomOption, nativeOptionsList, item}) {

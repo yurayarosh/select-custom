@@ -682,28 +682,22 @@ function () {
       }
       var allOpenSelects = document.querySelectorAll('.' + this.constants.wrap + '.' + this.constants.IS_OPEN);
       if (!allOpenSelects.length) return;
+      if (e.type && e.type === 'click' && e.target.closest('.' + this.constants.IS_DISABLED)) return;
+      if (e.type && e.type === 'click' && e.target.hasAttribute(this.constants.DATA_LABEL)) return;
 
-      function checkTarget(e, className) {
-        if (e.target.classList && e.target.classList.contains(className) || e.target.closest('.' + className)) {
-          return true;
-        }
-      }
-      if (e.target.closest('.' + this.constants.IS_DISABLED)) return;
-      if (e.target.hasAttribute(this.constants.DATA_LABEL)) return;
-
-      if (e.target.closest('.' + this.constants.wrap)) {
+      if (e.type && e.type === 'click' && e.target.closest('.' + this.constants.wrap)) {
         var elem = e.target.closest('.' + this.constants.wrap).querySelector('select');
 
         if (elem.multiple) {
-          if (checkTarget(e, this.constants.panel)) return;
+          if (e.type && e.type === 'click' && e.target.closest('.' + this.constants.panel)) return;
         }
 
         if (elem.hasAttribute(this.constants.DATA_ALLOW_PANEL_CLICK)) {
-          if (checkTarget(e, this.constants.panel)) return;
+          if (e.type && e.type === 'click' && e.target.closest('.' + this.constants.panel)) return;
         }
 
         if (elem.hasAttribute(this.constants.DATA_HAS_PANEL_ITEM)) {
-          if (checkTarget(e, this.constants.panelItemClassName)) return;
+          if (e.type && e.type === 'click' && e.target.closest('.' + this.constants.panelItemClassName)) return;
         }
       }
 
