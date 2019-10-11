@@ -1018,6 +1018,7 @@ function setSelects() {
   var selects = _toConsumableArray(document.querySelectorAll('.js-select'));
 
   if (!selects.length) return;
+  var customSelectObjects = [];
   var params = {
     default: {},
     multiple: {
@@ -1048,6 +1049,7 @@ function setSelects() {
     var name = select.dataset.type;
     var customSelect = new CustomSelect(select, params[name]);
     customSelect.init();
+    customSelectObjects.push(customSelect);
   }); // ================ example of destroy and reinit methods ======================
 
   var destroyFirst = document.querySelector('.js-destroy-first');
@@ -1055,19 +1057,19 @@ function setSelects() {
   var initAll = document.querySelector('.js-init-all');
   destroyFirst.addEventListener('click', function (e) {
     e.preventDefault();
-    customSelectObject[0].destroy();
+    customSelectObjects[0].destroy();
   });
   destroyAll.addEventListener('click', function (e) {
     e.preventDefault();
-    customSelectObject.forEach(function (select) {
+    customSelectObjects.forEach(function (select) {
       select.destroy();
     }); // to remove close function, triggering on document click
 
-    customSelectObject[0].destroy();
+    customSelectObjects[0].destroy();
   });
   initAll.addEventListener('click', function (e) {
     e.preventDefault();
-    customSelectObject.forEach(function (customSelect) {
+    customSelectObjects.forEach(function (customSelect) {
       customSelect.init();
     });
   });

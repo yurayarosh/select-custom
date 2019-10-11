@@ -78,21 +78,21 @@ function setSelects() {
 
   destroyFirst.addEventListener('click', e => {
     e.preventDefault();
-    customSelectObject[0].destroy();
+    customSelectObjects[0].destroy();
   });
 
   destroyAll.addEventListener('click', e => {
     e.preventDefault();
-    customSelectObject.forEach(select => {
+    customSelectObjects.forEach(select => {
       select.destroy();
     });
     // to remove close function, triggering on document click
-    customSelectObject[0].destroy();
+    customSelectObjects[0].destroy();
   });
 
   initAll.addEventListener('click', e => {
     e.preventDefault();
-    customSelectObject.forEach(customSelect => {
+    customSelectObjects.forEach(customSelect => {
       customSelect.init();
     });
   });
