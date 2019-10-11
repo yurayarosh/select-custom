@@ -1,7 +1,11 @@
 export default function addSelectsPlaceholder() {
   const HAS_PLACEHOLDER = 'has-placeholder';
   let placeholder;
-  const opener = this.opener.children[0] || this.opener;  
+  const openerLabel = this.opener.children[0];
+  const opener =
+    openerLabel && openerLabel.hasAttribute('data-label-index')
+      ? this.opener
+      : openerLabel;
 
   const selectedOptions = [...this.el.options].filter(option => {
     if (option.selected && option.value !== 'placeholder') {
@@ -41,7 +45,7 @@ export default function addSelectsPlaceholder() {
     
     if (e.currentTarget.value === 'placeholder' && !selectedOptions.length
       || !e.currentTarget.value) {
-      this.select.classList.add(HAS_PLACEHOLDER);
+      this.select.classList.add(HAS_PLACEHOLDER);        
       opener.innerText = placeholder;
     }
   });

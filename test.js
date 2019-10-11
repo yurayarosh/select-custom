@@ -905,7 +905,8 @@ function addSelectsPlaceholder() {
 
   var HAS_PLACEHOLDER = 'has-placeholder';
   var placeholder;
-  var opener = this.opener.children[0] || this.opener;
+  var openerLabel = this.opener.children[0];
+  var opener = openerLabel && openerLabel.hasAttribute('data-label-index') ? this.opener : openerLabel;
 
   var selectedOptions = _toConsumableArray(this.el.options).filter(function (option) {
     if (option.selected && option.value !== 'placeholder') {
@@ -1017,7 +1018,6 @@ function setSelects() {
   var selects = _toConsumableArray(document.querySelectorAll('.js-select'));
 
   if (!selects.length) return;
-  var customSelectObject = [];
   var params = {
     default: {},
     multiple: {
@@ -1048,7 +1048,6 @@ function setSelects() {
     var name = select.dataset.type;
     var customSelect = new CustomSelect(select, params[name]);
     customSelect.init();
-    customSelectObject.push(customSelect);
   }); // ================ example of destroy and reinit methods ======================
 
   var destroyFirst = document.querySelector('.js-destroy-first');

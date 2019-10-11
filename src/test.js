@@ -6,7 +6,7 @@ import filterSearch from './test-components/filterSearch';
 class CustomSelect extends Select {
   constructor(select, params) {
     super(select, params);
-    this.name = select.dataset.type;
+    this.name = select.dataset.type;    
   }
 
   getElements() {
@@ -37,7 +37,7 @@ function setSelects() {
   const selects = [...document.querySelectorAll('.js-select')];
   if (!selects.length) return;
 
-  const customSelectObject = [];
+  const customSelectObjects = [];
 
   const params = {
     default: {},
@@ -68,7 +68,7 @@ function setSelects() {
     const name = select.dataset.type;
     const customSelect = new CustomSelect(select, params[name]);
     customSelect.init();
-    customSelectObject.push(customSelect);
+    customSelectObjects.push(customSelect);
   });
 
   // ================ example of destroy and reinit methods ======================
