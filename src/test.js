@@ -16,6 +16,16 @@ class CustomSelect extends Select {
     this.input = this.select.querySelector('.js-search');
   }
 
+  onOpen() {
+    console.log('open');
+    
+  }
+
+  onClose() {
+    console.log('close');
+    
+  }
+
   init() {
     if (
       this.select.classList &&

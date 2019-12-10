@@ -1,7 +1,7 @@
 import './polyfill';
-import { offset } from './helpers';
-import constants from './components/constants';
-import defaultParams from './components/defaultParameters';
+import { offset, BEMblock } from './helpers';
+import constants from './constants';
+import defaultParams from './defaultParameters';
 import _createElements from './components/_createElements';
 import _open from './components/_open';
 import _close from './components/_close';
@@ -48,7 +48,7 @@ export default class Select {
 
   triggerCheckbox(customOption) {
     const checkbox = customOption.querySelector('input[type="checkbox"]');
-    const condition = customOption.classList.contains(this.constants.IS_SELECTED);
+    const condition = BEMblock(customOption, this.constants.option).containsMod(this.constants.IS_SELECTED);
 
     if (checkbox && condition) checkbox.checked = true;
     if(checkbox && !condition) checkbox.checked = false;
@@ -67,11 +67,11 @@ export default class Select {
       return;
     };
 
-    const allOpenSelects = document.querySelectorAll('.'+this.constants.wrap+'.'+this.constants.IS_OPEN);
+    const allOpenSelects = document.querySelectorAll(`.${this.constants.wrap}--${this.constants.IS_OPEN}`);
 
-    this.select.classList.toggle(this.constants.IS_OPEN);
+    BEMblock(this.select, this.constants.wrap).toggleMod(this.constants.IS_OPEN);
     for (let i = 0; i < allOpenSelects.length; i++) {
-      allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
+      BEMblock(allOpenSelects[i], this.constants.wrap).removeMod(this.constants.IS_OPEN);
     };
 
     this.setPanelPosition();
@@ -92,11 +92,14 @@ export default class Select {
       return;
     };
 
-    const allOpenSelects = document.querySelectorAll('.'+this.constants.wrap+'.'+this.constants.IS_OPEN);
+    
+    const allOpenSelects = document.querySelectorAll(`.${this.constants.wrap}--${this.constants.IS_OPEN}`);
     if (!allOpenSelects.length) return;
 
 
-    if (e.type && e.type === 'click' && e.target.closest('.'+this.constants.IS_DISABLED)) return;
+    if (e.type && e.type === 'click' && e.target.closest(`.${this.constants.wrap}--${this.constants.IS_DISABLED}`)) return;
+
+    if (e.type && e.type === 'click' && e.target.closest(`.${this.constants.option}--${this.constants.IS_DISABLED}`)) return;
 
     if (e.type && e.type === 'click' && e.target.hasAttribute(this.constants.DATA_LABEL)) return;
     
@@ -117,7 +120,7 @@ export default class Select {
     };
     if (e.target.className.indexOf(this.constants.opener) === -1) {
       for (let i = 0; i < allOpenSelects.length; i++) {
-        allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
+        BEMblock(allOpenSelects[i], this.constants.wrap).removeMod(this.constants.IS_OPEN);
       };
     };
   };
@@ -125,10 +128,10 @@ export default class Select {
   setSelectedOptionsMultiple({clickedCustomOption, nativeOptionsList, item}) {
     if (nativeOptionsList[item].selected) {      
       nativeOptionsList[item].selected = false;
-      clickedCustomOption.classList.remove(this.constants.IS_SELECTED);
+      BEMblock(clickedCustomOption, this.constants.option).removeMod(this.constants.IS_SELECTED);
     } else {
       nativeOptionsList[item].selected = true;
-      clickedCustomOption.classList.add(this.constants.IS_SELECTED);
+      BEMblock(clickedCustomOption, this.constants.option).addMod(this.constants.IS_SELECTED);
     };
   };
 
@@ -137,11 +140,11 @@ export default class Select {
       const checkbox = customOptionsList[i].querySelector('input[type="checkbox"]');
 
       nativeOptionsList[i].selected = false;
-      customOptionsList[i].classList.remove(this.constants.IS_SELECTED);
+      BEMblock(customOptionsList[i], this.constants.option).removeMod(this.constants.IS_SELECTED);
       if (checkbox) checkbox.checked = false;
     };
     const checkbox = clickedCustomOption.querySelector('input[type="checkbox"]');
-    clickedCustomOption.classList.add(this.constants.IS_SELECTED);
+    BEMblock(clickedCustomOption, this.constants.option).addMod(this.constants.IS_SELECTED);
     nativeOptionsList[item].selected = true;
     if (checkbox) checkbox.checked = true;
   };
@@ -176,9 +179,9 @@ export default class Select {
     const panelBottom = offset(this.panel).top + this.panel.offsetHeight;
 
     if (panelBottom >= window.innerHeight) {
-      this.panel.classList.add(this.constants.IS_ABOVE);
+      BEMblock(this.panel, this.constants.panel).addMod(this.constants.IS_ABOVE)
     } else {
-      this.panel.classList.remove(this.constants.IS_ABOVE);
+      BEMblock(this.panel, this.constants.panel).removeMod(this.constants.IS_ABOVE)
     };
   };
 
@@ -219,7 +222,7 @@ export default class Select {
     const index = +customOption.getAttribute(this.constants.DATA_LABEL_INDEX);
     const currentLabel = opener.querySelector(`[${this.constants.DATA_LABEL_INDEX}="${index}"]`);
 
-    if (customOption.classList.contains(this.constants.IS_SELECTED)) {
+    if (BEMblock(customOption, this.constants.option).containsMod(this.constants.IS_SELECTED)) {
       if (!opener.children.length) {
         opener.innerHTML = '';
       };      
@@ -245,8 +248,8 @@ export default class Select {
         if (option.selected) {
           option.selected = false;
         };
-        if (option.classList.contains(this.constants.IS_SELECTED)) {
-          option.classList.remove(this.constants.IS_SELECTED)
+        if (BEMblock(option, this.constants.option).containsMod(this.constants.IS_SELECTED)) {
+          BEMblock(option, this.constants.option).removeMod(this.constants.IS_SELECTED);
         };
       });
 

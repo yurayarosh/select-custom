@@ -230,6 +230,32 @@ function unwrap(wrapper) {
 function detectTouch() {
   return 'ontouchstart' in window || navigator.maxTouchPoints;
 }
+var BEMblock = function BEMblock(block, name) {
+  var addMod = function addMod(mod) {
+    block.classList.add("".concat(name, "--").concat(mod));
+  };
+
+  var removeMod = function removeMod(mod) {
+    block.classList.remove("".concat(name, "--").concat(mod));
+  };
+
+  var toggleMod = function toggleMod(mod) {
+    block.classList.toggle("".concat(name, "--").concat(mod));
+  };
+
+  var containsMod = function containsMod(mod) {
+    return block.classList.contains("".concat(name, "--").concat(mod));
+  };
+
+  return {
+    name: name,
+    block: block,
+    addMod: addMod,
+    toggleMod: toggleMod,
+    removeMod: removeMod,
+    containsMod: containsMod
+  };
+};
 
 var constants = {
   wrap: 'custom-select',
@@ -240,11 +266,11 @@ var constants = {
   optgroup: 'custom-select__optgroup',
   panelItemClassName: 'custom-select__panel-item',
   openerLabel: 'custom-select__opener-label',
-  IS_OPEN: 'is-open',
-  IS_DISABLED: 'is-disabled',
-  IS_MULTIPLE: 'is-multiple',
-  IS_SELECTED: 'is-selected',
-  IS_ABOVE: 'is-above',
+  IS_OPEN: 'open',
+  IS_DISABLED: 'disabled',
+  IS_MULTIPLE: 'multiple',
+  IS_SELECTED: 'selected',
+  IS_ABOVE: 'above',
   HAS_CUSTOM_SELECT: 'has-custom-select',
   HAS_UNUSED_CLOSE_FUNCTION: 'has-unused-close-custom-select-function',
   DATA_ALLOW_PANEL_CLICK: 'data-allow-panel-click',
@@ -327,7 +353,7 @@ function _createElements() {
         this.addOptionItem(optionsInGroup[j], customOption);
 
         if (optionsInGroup[j].selected) {
-          customOption.classList.add(this.constants.IS_SELECTED);
+          BEMblock(customOption, this.constants.option).addMod(this.constants.IS_SELECTED);
 
           if (openerLabel) {
             openerLabel.innerHTML = optionsInGroup[j].innerHTML;
@@ -340,7 +366,7 @@ function _createElements() {
         }
 
         if (optionsInGroup[j].disabled) {
-          customOption.classList.add(this.constants.IS_DISABLED);
+          BEMblock(customOption, this.constants.option).addMod(this.constants.IS_DISABLED);
         }
         customOptgroup.appendChild(customOption);
       }
@@ -377,8 +403,7 @@ function _createElements() {
 
       if (this.el.multiple) {
         if (options[_i].selected) {
-          _customOption.classList.add(this.constants.IS_SELECTED);
-
+          BEMblock(_customOption, this.constants.option).addMod(this.constants.IS_SELECTED);
           selectedOptions.push(_customOption);
 
           if (openerLabel) {
@@ -391,7 +416,7 @@ function _createElements() {
         }
       } else {
         if (options[_i].selected) {
-          _customOption.classList.add(this.constants.IS_SELECTED);
+          BEMblock(_customOption, this.constants.option).addMod(this.constants.IS_SELECTED);
 
           if (openerLabel) {
             openerLabel.innerHTML = options[_i].innerHTML;
@@ -404,7 +429,7 @@ function _createElements() {
       }
 
       if (options[_i].disabled) {
-        _customOption.classList.add(this.constants.IS_DISABLED);
+        BEMblock(_customOption, this.constants.option).addMod(this.constants.IS_DISABLED);
       }
 
       if (optionsWrap) {
@@ -456,11 +481,10 @@ function _createElements() {
     this.addDataAttributes(this.el, wrap);
   }
 
-  function addWrapClassName(condition, className) {
-    if (condition) {
-      wrap.classList.add(className);
-    }
-  }
+  var addWrapClassName = function addWrapClassName(condition, mod) {
+    if (condition) BEMblock(wrap, _this.constants.wrap).addMod(mod);
+  };
+
   addWrapClassName(this.el.disabled, this.constants.IS_DISABLED);
   addWrapClassName(this.el.multiple, this.constants.IS_MULTIPLE);
   panel.classList.add(this.constants.panel);
@@ -505,7 +529,7 @@ function _change() {
     customOptions[i].addEventListener('click', function (e) {
       if (_this.el.disabled) return;
       var clickedCustomOption = e.currentTarget;
-      if (clickedCustomOption.classList.contains(_this.constants.IS_DISABLED)) return;
+      if (BEMblock(clickedCustomOption, _this.constants.option).containsMod(_this.constants.IS_DISABLED)) return;
       var opener = _this.options.openerLabel ? _this.opener.children[0] : _this.opener;
 
       _this.setSelectedOptions({
@@ -546,14 +570,14 @@ function _trigerCustomEvents() {
 
   var observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
-      if (mutation.target.classList.contains(_this.constants.IS_OPEN)) {
-        if (mutation.oldValue.indexOf(_this.constants.IS_OPEN) === -1) {
+      if (BEMblock(mutation.target, _this.constants.wrap).containsMod(_this.constants.IS_OPEN)) {
+        if (mutation.oldValue.indexOf("".concat(_this.constants.wrap, "--").concat(_this.constants.IS_OPEN)) === -1) {
           if (_this.onOpen) {
             _this.onOpen(mutation.target);
           }
         }
-      } else if (mutation.oldValue.indexOf(_this.constants.IS_OPEN) > 0) {
-        _this.panel.classList.remove(_this.constants.IS_ABOVE);
+      } else if (mutation.oldValue.indexOf("".concat(_this.constants.wrap, "--").concat(_this.constants.IS_OPEN)) > 0) {
+        BEMblock(_this.panel, _this.constants.panel).removeMod(_this.constants.IS_ABOVE);
 
         if (_this.onClose) {
           _this.onClose(mutation.target);
@@ -638,7 +662,7 @@ function () {
     key: "triggerCheckbox",
     value: function triggerCheckbox(customOption) {
       var checkbox = customOption.querySelector('input[type="checkbox"]');
-      var condition = customOption.classList.contains(this.constants.IS_SELECTED);
+      var condition = BEMblock(customOption, this.constants.option).containsMod(this.constants.IS_SELECTED);
       if (checkbox && condition) checkbox.checked = true;
       if (checkbox && !condition) checkbox.checked = false;
     }
@@ -657,11 +681,11 @@ function () {
       if (e.target.closest("[".concat(this.constants.DATA_LABEL_INDEX, "]"))) {
         return;
       }
-      var allOpenSelects = document.querySelectorAll('.' + this.constants.wrap + '.' + this.constants.IS_OPEN);
-      this.select.classList.toggle(this.constants.IS_OPEN);
+      var allOpenSelects = document.querySelectorAll(".".concat(this.constants.wrap, "--").concat(this.constants.IS_OPEN));
+      BEMblock(this.select, this.constants.wrap).toggleMod(this.constants.IS_OPEN);
 
       for (var i = 0; i < allOpenSelects.length; i++) {
-        allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
+        BEMblock(allOpenSelects[i], this.constants.wrap).removeMod(this.constants.IS_OPEN);
       }
       this.setPanelPosition();
     }
@@ -680,9 +704,10 @@ function () {
       if (e.target.closest("[".concat(this.constants.DATA_LABEL_INDEX, "]"))) {
         return;
       }
-      var allOpenSelects = document.querySelectorAll('.' + this.constants.wrap + '.' + this.constants.IS_OPEN);
+      var allOpenSelects = document.querySelectorAll(".".concat(this.constants.wrap, "--").concat(this.constants.IS_OPEN));
       if (!allOpenSelects.length) return;
-      if (e.type && e.type === 'click' && e.target.closest('.' + this.constants.IS_DISABLED)) return;
+      if (e.type && e.type === 'click' && e.target.closest(".".concat(this.constants.wrap, "--").concat(this.constants.IS_DISABLED))) return;
+      if (e.type && e.type === 'click' && e.target.closest(".".concat(this.constants.option, "--").concat(this.constants.IS_DISABLED))) return;
       if (e.type && e.type === 'click' && e.target.hasAttribute(this.constants.DATA_LABEL)) return;
 
       if (e.type && e.type === 'click' && e.target.closest('.' + this.constants.wrap)) {
@@ -703,7 +728,7 @@ function () {
 
       if (e.target.className.indexOf(this.constants.opener) === -1) {
         for (var i = 0; i < allOpenSelects.length; i++) {
-          allOpenSelects[i].classList.remove(this.constants.IS_OPEN);
+          BEMblock(allOpenSelects[i], this.constants.wrap).removeMod(this.constants.IS_OPEN);
         }
       }
     }
@@ -716,10 +741,10 @@ function () {
 
       if (nativeOptionsList[item].selected) {
         nativeOptionsList[item].selected = false;
-        clickedCustomOption.classList.remove(this.constants.IS_SELECTED);
+        BEMblock(clickedCustomOption, this.constants.option).removeMod(this.constants.IS_SELECTED);
       } else {
         nativeOptionsList[item].selected = true;
-        clickedCustomOption.classList.add(this.constants.IS_SELECTED);
+        BEMblock(clickedCustomOption, this.constants.option).addMod(this.constants.IS_SELECTED);
       }
     }
   }, {
@@ -734,11 +759,11 @@ function () {
         var _checkbox = customOptionsList[i].querySelector('input[type="checkbox"]');
 
         nativeOptionsList[i].selected = false;
-        customOptionsList[i].classList.remove(this.constants.IS_SELECTED);
+        BEMblock(customOptionsList[i], this.constants.option).removeMod(this.constants.IS_SELECTED);
         if (_checkbox) _checkbox.checked = false;
       }
       var checkbox = clickedCustomOption.querySelector('input[type="checkbox"]');
-      clickedCustomOption.classList.add(this.constants.IS_SELECTED);
+      BEMblock(clickedCustomOption, this.constants.option).addMod(this.constants.IS_SELECTED);
       nativeOptionsList[item].selected = true;
       if (checkbox) checkbox.checked = true;
     }
@@ -781,9 +806,9 @@ function () {
       var panelBottom = offset(this.panel).top + this.panel.offsetHeight;
 
       if (panelBottom >= window.innerHeight) {
-        this.panel.classList.add(this.constants.IS_ABOVE);
+        BEMblock(this.panel, this.constants.panel).addMod(this.constants.IS_ABOVE);
       } else {
-        this.panel.classList.remove(this.constants.IS_ABOVE);
+        BEMblock(this.panel, this.constants.panel).removeMod(this.constants.IS_ABOVE);
       }
     }
   }, {
@@ -821,7 +846,7 @@ function () {
       var index = +customOption.getAttribute(this.constants.DATA_LABEL_INDEX);
       var currentLabel = opener.querySelector("[".concat(this.constants.DATA_LABEL_INDEX, "=\"").concat(index, "\"]"));
 
-      if (customOption.classList.contains(this.constants.IS_SELECTED)) {
+      if (BEMblock(customOption, this.constants.option).containsMod(this.constants.IS_SELECTED)) {
         if (!opener.children.length) {
           opener.innerHTML = '';
         }
@@ -848,8 +873,8 @@ function () {
             option.selected = false;
           }
 
-          if (option.classList.contains(_this2.constants.IS_SELECTED)) {
-            option.classList.remove(_this2.constants.IS_SELECTED);
+          if (BEMblock(option, _this2.constants.option).containsMod(_this2.constants.IS_SELECTED)) {
+            BEMblock(option, _this2.constants.option).removeMod(_this2.constants.IS_SELECTED);
           }
         });
         this.dispatchEvent(this.el);
@@ -997,6 +1022,16 @@ function (_Select) {
     value: function getElements() {
       this.panelOptions = _toConsumableArray(this.select.querySelectorAll('.custom-select__option'));
       this.input = this.select.querySelector('.js-search');
+    }
+  }, {
+    key: "onOpen",
+    value: function onOpen() {
+      console.log('open');
+    }
+  }, {
+    key: "onClose",
+    value: function onClose() {
+      console.log('close');
     }
   }, {
     key: "init",

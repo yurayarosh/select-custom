@@ -43,7 +43,7 @@
       position: absolute;
     }
 
-    .custom-select.is-open .custom-select__panel {
+    .custom-select--open .custom-select__panel {
       visibility: visible;
       opacity: 1;
     }
@@ -81,12 +81,19 @@
       cursor: pointer;
     }
 
+    .custom-select__option-icon {
+      display: inline-block;
+      width: .5em;
+      height: .5em;
+      margin-right: .2em;
+    }
+
     .custom-select__option[data-value="placeholder"] {
       display: none;
     }
 
     .custom-select__option:hover,
-    .custom-select__option.is-selected {
+    .custom-select__option--selected {
       background-color: var(--gray);
     }
 
@@ -110,7 +117,7 @@
         <optgroup label="group-1">
           <option value="placeholder">This is placeholder</option>
           <option selected value="1">option - 1</option>
-          <option value="2">option - 2</option>
+          <option disabled value="2">option - 2</option>
           <option value="3">option - 3</option>
         </optgroup>
         <optgroup label="group-2">

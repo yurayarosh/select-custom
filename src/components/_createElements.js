@@ -1,4 +1,5 @@
 import { wrapElements }  from '../helpers';
+import { BEMblock} from '../helpers'
 
 export default function _createElements() {
   const wrap = document.createElement('div');
@@ -54,7 +55,7 @@ export default function _createElements() {
         this.addOptionItem(optionsInGroup[j], customOption);
 
         if (optionsInGroup[j].selected) {
-          customOption.classList.add(this.constants.IS_SELECTED);
+          BEMblock(customOption, this.constants.option).addMod(this.constants.IS_SELECTED);
           if (openerLabel) {
             openerLabel.innerHTML = optionsInGroup[j].innerHTML;
           } else {
@@ -65,7 +66,7 @@ export default function _createElements() {
           if (checkbox) checkbox.checked = true;
         };
         if (optionsInGroup[j].disabled) {
-          customOption.classList.add(this.constants.IS_DISABLED);
+          BEMblock(customOption, this.constants.option).addMod(this.constants.IS_DISABLED);
         };
         
         customOptgroup.appendChild(customOption);
@@ -102,7 +103,7 @@ export default function _createElements() {
 
       if (this.el.multiple) {
         if (options[i].selected) {
-          customOption.classList.add(this.constants.IS_SELECTED);
+          BEMblock(customOption, this.constants.option).addMod(this.constants.IS_SELECTED);
           selectedOptions.push(customOption);
           if (openerLabel) {
             openerLabel.innerHTML = options[i].innerHTML;
@@ -114,7 +115,7 @@ export default function _createElements() {
         };
       } else {
         if (options[i].selected) {
-          customOption.classList.add(this.constants.IS_SELECTED);
+          BEMblock(customOption, this.constants.option).addMod(this.constants.IS_SELECTED);
           if (openerLabel) {
             openerLabel.innerHTML = options[i].innerHTML;
           } else {
@@ -126,7 +127,7 @@ export default function _createElements() {
       };
       
       if (options[i].disabled) {
-        customOption.classList.add(this.constants.IS_DISABLED);
+        BEMblock(customOption, this.constants.option).addMod(this.constants.IS_DISABLED);
       };
       
 
@@ -183,10 +184,8 @@ export default function _createElements() {
     this.addDataAttributes(this.el, wrap);
   };    
 
-  function addWrapClassName(condition, className) {
-    if (condition) {
-      wrap.classList.add(className);
-    };
+  const addWrapClassName = (condition, mod) => {
+    if (condition) BEMblock(wrap, this.constants.wrap).addMod(mod);
   };
   addWrapClassName(this.el.disabled, this.constants.IS_DISABLED);
   addWrapClassName(this.el.multiple, this.constants.IS_MULTIPLE);
